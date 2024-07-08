@@ -1,0 +1,15 @@
+[workspace]
+resolver = "2"
+
+# omiga
+
+# @formatter:off
+members = [
+    "crates/bean",
+    "crates/ctx",
+    "crates/env",
+    "crates/macroattr",
+    "crates/macrofn",
+    "crates/web"
+]
+# @formatter:on
