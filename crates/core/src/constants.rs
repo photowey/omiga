@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-#![allow(non_snake_case)]
-
-// macrofn
+// constants
 
 // ----------------------------------------------------------------
+
+pub const SIGMA_VERSION: &str = "0.1.0";
+pub const SIGMA_CORE_PROFILE_ACTIVES: &str = "default";

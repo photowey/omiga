@@ -5,11 +5,12 @@ resolver = "2"
 
 # @formatter:off
 members = [
-    "crates/bean",
+    "crates/bean", "crates/core",
     "crates/ctx",
     "crates/env",
     "crates/macroattr",
     "crates/macrofn",
+    "crates/testing", "crates/tests",
     "crates/web"
 ]
 # @formatter:on

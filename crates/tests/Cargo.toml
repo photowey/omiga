@@ -1,0 +1,14 @@
+[package]
+name = "sigmatests"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+macroattr = { path = "../macroattr" }
+omigacore = { path = "../core" }
+macrofn = { path = "../macrofn" }
+omigabean = { path = "../bean" }
+omigactx = { path = "../ctx" }
+omigaenv = { path = "../env" }
+omigatesting = { path = "../testing" }
+omigaweb = { path = "../web" }

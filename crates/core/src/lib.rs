@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-#![allow(non_snake_case)]
-
-// macrofn
+// omigacore
 
 // ----------------------------------------------------------------
+
+pub mod constants;

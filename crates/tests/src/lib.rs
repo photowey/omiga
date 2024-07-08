@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-#![allow(non_snake_case)]
-
-// macrofn
+// sigmatests
 
 // ----------------------------------------------------------------
+
+#[cfg(test)]
+mod integration_tests;
