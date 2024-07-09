@@ -14,22 +14,31 @@
  * limitations under the License.
  */
 
-// constants
+// reader
 
 // ----------------------------------------------------------------
 
-pub const SIGMA_VERSION: &str = "0.1.0";
-pub const SIGMA_CORE_PROFILE_ACTIVES_DEFAULT: &str = "default";
+use std::fs;
+use std::path::PathBuf;
+
+use crate::core::domain::Table;
+use crate::core::error::ReadError;
 
 // ----------------------------------------------------------------
 
-// omiga.toml | omiga-dev.toml ...
-pub const SIGMA_CORE_CONFIG_FILE_NAME_DEFAULT: &str = "omiga";
-// toml* | yml/yaml | json | properties | ini | ...
-pub const SIGMA_CORE_CONFIG_FILE_SUFFIX_DEFAULT: &str = "toml";
-pub const SIGMA_CORE_CONFIG_FILE_SEARCH_PATHS_DEFAULT: &str = ".,configs,resources";
+pub trait ConfigReader {
+    fn name(&self) -> String;
+    fn suffix(&self) -> String;
+    fn supports(&self, suffix: &str) -> bool;
 
-// ----------------------------------------------------------------
+    fn read_from_str(&self, data: &str) -> Result<Table, ReadError>;
 
-/// 9320: A dream moment for Manchester City's forward `Agüero`.
-pub const SIGMA_WEB_SERVER_PORT_DEFAULT: u32 = 9320;
+    fn read_from_path(&self, path: &str) -> Result<Table, ReadError> {
+        let canon = PathBuf::from(path)
+            .canonicalize()
+            .map_err(|_| ReadError::InvalidPath(path.to_string()))?;
+        let content =
+            fs::read_to_string(canon).map_err(|_| ReadError::ReadFailed(path.to_string()))?;
+        self.read_from_str(&content)
+    }
+}

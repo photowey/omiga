@@ -18,7 +18,7 @@
 
 // ----------------------------------------------------------------
 
-use omigacore::constants::SIGMA_CORE_PROFILE_ACTIVES;
+use omigacore::constants::SIGMA_CORE_PROFILE_ACTIVES_DEFAULT;
 use omigaweb::app::{Application, OmigaApplication};
 
 // ----------------------------------------------------------------
@@ -35,7 +35,7 @@ fn test_app_default_profile() {
     let app = OmigaApplication::builder().build();
 
     let profiles = app.profiles_active();
-    assert_eq!(SIGMA_CORE_PROFILE_ACTIVES, profiles);
+    assert_eq!(SIGMA_CORE_PROFILE_ACTIVES_DEFAULT, profiles);
 
     let ok = app.is_default_profile();
     assert!(ok);

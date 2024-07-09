@@ -18,9 +18,11 @@
 
 // ----------------------------------------------------------------
 
-use omigacore::constants::SIGMA_CORE_PROFILE_ACTIVES;
+use omigacore::constants::{
+    SIGMA_CORE_CONFIG_FILE_SUFFIX_DEFAULT, SIGMA_CORE_PROFILE_ACTIVES_DEFAULT,
+};
 
-// default
+use crate::core::kv::Kv;
 
 // ----------------------------------------------------------------
 
@@ -38,6 +40,12 @@ pub struct OmigaApplication {
 impl OmigaApplication {
     pub fn builder() -> OmigaApplicationBuilder {
         OmigaApplicationBuilder::default()
+    }
+
+    // omiga start --omiga.server.port=9320
+    //               ^~~~ k/v
+    pub fn walk(/*tmp*/ _opts: Kv) -> OmigaApplicationBuilder {
+        panic!("Unsupported now.")
     }
 
     // ----------------------------------------------------------------
@@ -70,7 +78,7 @@ impl OmigaApplication {
 
     pub fn is_default_profile(&self) -> bool {
         self.profiles
-            .contains(&SIGMA_CORE_PROFILE_ACTIVES.to_string())
+            .contains(&SIGMA_CORE_PROFILE_ACTIVES_DEFAULT.to_string())
     }
 }
 
@@ -85,13 +93,17 @@ impl Application for OmigaApplication {
 pub struct OmigaApplicationBuilder {
     configs: Vec<String>,
     profiles: Vec<String>,
+    suffix: Option<String>,
+    search_paths: Vec<String>,
 }
 
 impl OmigaApplicationBuilder {
     pub fn new() -> Self {
         Self {
             configs: Vec::new(),
-            profiles: vec![SIGMA_CORE_PROFILE_ACTIVES.to_string()],
+            profiles: vec![SIGMA_CORE_PROFILE_ACTIVES_DEFAULT.to_string()],
+            suffix: Some(SIGMA_CORE_CONFIG_FILE_SUFFIX_DEFAULT.to_string()),
+            search_paths: Vec::new(),
         }
     }
 
@@ -126,8 +138,22 @@ impl OmigaApplicationBuilder {
 
     // ----------------------------------------------------------------
 
+    pub fn suffix(mut self, suffix: String) -> Self {
+        self.suffix = Some(suffix);
+
+        self
+    }
+
+    pub fn search_path(mut self, search_paths: Vec<String>) -> Self {
+        self.search_paths.extend(search_paths);
+
+        self
+    }
+
+    // ----------------------------------------------------------------
+
     fn is_not_default_profile(profile: &str) -> bool {
-        profile != SIGMA_CORE_PROFILE_ACTIVES
+        profile != SIGMA_CORE_PROFILE_ACTIVES_DEFAULT
     }
 
     // ----------------------------------------------------------------

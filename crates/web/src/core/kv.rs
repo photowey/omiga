@@ -14,22 +14,27 @@
  * limitations under the License.
  */
 
-// constants
+// core/kv
 
 // ----------------------------------------------------------------
 
-pub const SIGMA_VERSION: &str = "0.1.0";
-pub const SIGMA_CORE_PROFILE_ACTIVES_DEFAULT: &str = "default";
+use std::collections::HashMap;
 
 // ----------------------------------------------------------------
 
-// omiga.toml | omiga-dev.toml ...
-pub const SIGMA_CORE_CONFIG_FILE_NAME_DEFAULT: &str = "omiga";
-// toml* | yml/yaml | json | properties | ini | ...
-pub const SIGMA_CORE_CONFIG_FILE_SUFFIX_DEFAULT: &str = "toml";
-pub const SIGMA_CORE_CONFIG_FILE_SEARCH_PATHS_DEFAULT: &str = ".,configs,resources";
+/// `Omiga` server command k/v args if present.
+pub struct Kv {
+    pub kv: Option<HashMap<String, String>>,
+}
 
-// ----------------------------------------------------------------
+impl Kv {
+    pub fn new() -> Self {
+        Self { kv: None }
+    }
+}
 
-/// 9320: A dream moment for Manchester City's forward `Agüero`.
-pub const SIGMA_WEB_SERVER_PORT_DEFAULT: u32 = 9320;
+impl Default for Kv {
+    fn default() -> Self {
+        Self::new()
+    }
+}

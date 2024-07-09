@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-// omigaenv
+// core
 
-// ----------------------------------------------------------------
+// ------------------------------------------------------------
 
-pub mod core;
-pub mod environment;
-pub mod reader;
-pub mod standard;
+pub mod domain;
+pub mod error;

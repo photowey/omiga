@@ -14,22 +14,31 @@
  * limitations under the License.
  */
 
-// constants
+// environment
 
 // ----------------------------------------------------------------
 
-pub const SIGMA_VERSION: &str = "0.1.0";
-pub const SIGMA_CORE_PROFILE_ACTIVES_DEFAULT: &str = "default";
+use crate::core::domain::Value;
+use crate::core::error::ConfigError;
+use crate::reader::ConfigReader;
 
 // ----------------------------------------------------------------
 
-// omiga.toml | omiga-dev.toml ...
-pub const SIGMA_CORE_CONFIG_FILE_NAME_DEFAULT: &str = "omiga";
-// toml* | yml/yaml | json | properties | ini | ...
-pub const SIGMA_CORE_CONFIG_FILE_SUFFIX_DEFAULT: &str = "toml";
-pub const SIGMA_CORE_CONFIG_FILE_SEARCH_PATHS_DEFAULT: &str = ".,configs,resources";
+pub trait Environment {
+    fn set(&mut self, key: &str, value: Value) -> Result<(), ConfigError>;
+    fn get(&self, key: &str) -> Result<&Value, ConfigError>;
+
+    fn try_acquire(&self, suffix: &str) -> Option<&dyn ConfigReader>;
+    fn try_acquires(&self) -> Vec<&dyn ConfigReader>;
+}
 
 // ----------------------------------------------------------------
 
-/// 9320: A dream moment for Manchester City's forward `Agüero`.
-pub const SIGMA_WEB_SERVER_PORT_DEFAULT: u32 = 9320;
+pub trait DynamicEnvironment: Environment {
+    fn set_t<T>(&mut self, k: &str, v: T) -> Result<(), ConfigError>
+    where
+        T: Into<Value>,
+    {
+        self.set(k, v.into())
+    }
+}
