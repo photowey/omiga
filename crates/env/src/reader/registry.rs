@@ -24,6 +24,7 @@ use crate::reader::ConfigReader;
 
 // ------------------------------------------------------------
 
+#[allow(dead_code)]
 pub trait ReaderRegistry {
     fn register(&mut self, reader: Box<dyn ConfigReader>);
     fn try_acquire(&self, suffix: &str) -> Option<&dyn ConfigReader>;
@@ -32,6 +33,7 @@ pub trait ReaderRegistry {
 
 // ------------------------------------------------------------
 
+#[allow(dead_code)]
 pub struct ConfigReaderRegistry {
     readers: HashMap</*suffix*/ String, Box<dyn ConfigReader>>,
 }

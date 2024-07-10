@@ -14,33 +14,29 @@
  * limitations under the License.
  */
 
-// environment
+// main
 
 // ----------------------------------------------------------------
 
-use crate::core::domain::Value;
-use crate::core::error::ConfigError;
-use crate::reader::ConfigReader;
-
-pub mod standard;
+use tester::kv;
 
 // ----------------------------------------------------------------
 
-pub trait Environment {
-    fn set(&mut self, key: &str, value: Value) -> Result<(), ConfigError>;
-    fn get(&self, key: &str) -> Result<&Value, ConfigError>;
-
-    fn try_acquire(&self, suffix: &str) -> Option<&dyn ConfigReader>;
-    fn try_acquires(&self) -> Vec<&dyn ConfigReader>;
+/// command-line k/v args
+///
+/// # Args Examples
+///
+/// $ cargo run -- start --omiga.server.port=9320
+///
+/// $ cargo run -- start --omiga.application.name=helloomiga
+///
+/// $ cargo run -- start --omiga.server.port=9320 --omiga.application.name=helloomiga
+///
+/// priority: 1: remote server(Unsupported now.) > 2.command-line args > 3.environment variables > 4.config files
+fn main() {
+    try_parse_command_line_kv_args()
 }
 
-// ----------------------------------------------------------------
-
-pub trait DynamicEnvironment: Environment {
-    fn set_t<T>(&mut self, k: &str, v: T) -> Result<(), ConfigError>
-    where
-        T: Into<Value>,
-    {
-        self.set(k, v.into())
-    }
+fn try_parse_command_line_kv_args() {
+    kv::try_parse_command_line_kv_args()
 }
