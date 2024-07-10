@@ -11,6 +11,7 @@ members = [
     "crates/env",
     "crates/macroattr",
     "crates/macrofn",
+    "crates/omiga",
     "crates/tester",
     "crates/testing",
     "crates/tests",
