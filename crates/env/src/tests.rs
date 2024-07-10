@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-// core
+// tests
 
-// ------------------------------------------------------------
-
-pub mod converter;
-pub mod domain;
-pub mod error;
+// ----------------------------------------------------------------

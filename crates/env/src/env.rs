@@ -22,6 +22,10 @@ use crate::core::domain::Value;
 use crate::core::error::ConfigError;
 use crate::reader::ConfigReader;
 
+pub mod standard;
+
+// ----------------------------------------------------------------
+
 // ----------------------------------------------------------------
 
 pub trait Environment {

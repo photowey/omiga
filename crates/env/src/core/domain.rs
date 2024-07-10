@@ -31,6 +31,11 @@ pub type Array = Vec<Value>;
 
 // ----------------------------------------------------------------
 
+pub type OmigaTable = Table;
+pub type OmigaValue = Value;
+
+// ----------------------------------------------------------------
+
 #[derive(Debug, PartialEq, Clone)]
 pub enum Value {
     Nested(Table),

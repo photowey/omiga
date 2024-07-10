@@ -31,5 +31,10 @@ pub const SIGMA_CORE_CONFIG_FILE_SEARCH_PATHS_DEFAULT: &str = ".,configs,resourc
 
 // ----------------------------------------------------------------
 
+pub const SIGMA_CONFIG_READER_TOML: &str = "TOML";
+pub const SIGMA_CONFIG_READER_TOML_SUFFIX: &str = "toml";
+
+// ----------------------------------------------------------------
+
 /// 9320: A dream moment for Manchester City's forward `Agüero`.
 pub const SIGMA_WEB_SERVER_PORT_DEFAULT: u32 = 9320;

@@ -28,4 +28,4 @@ jobs:
 
       - name: Run tests
         #run: cargo test --verbose --test integration_tests -- --show-output
-        run: cargo test --verbose -- --show-output
+        run: cargo test --verbose --features tomls -- --show-output

@@ -19,6 +19,9 @@
 // ----------------------------------------------------------------
 
 pub mod core;
-pub mod environment;
+pub mod env;
 pub mod reader;
 pub mod standard;
+
+#[cfg(test)]
+mod tests;
