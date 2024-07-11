@@ -6,4 +6,4 @@ edition = "2021"
 publish = false
 
 [dependencies]
-clap = { version = "4.0", features = ["derive"] }
+clap = { workspace = true }

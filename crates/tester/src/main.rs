@@ -26,11 +26,11 @@ use tester::kv;
 ///
 /// # Args Examples
 ///
-/// $ cargo run -- start --omiga.server.port=9320
+/// `$ cargo run -- start --omiga.server.port=9320`
 ///
-/// $ cargo run -- start --omiga.application.name=helloomiga
+/// `$ cargo run -- start --omiga.application.name=helloomiga`
 ///
-/// $ cargo run -- start --omiga.server.port=9320 --omiga.application.name=helloomiga
+/// `$ cargo run -- start --omiga.server.port=9320 --omiga.application.name=helloomiga`
 ///
 /// priority: 1: remote server(Unsupported now.) > 2.command-line args > 3.environment variables > 4.config files
 fn main() {

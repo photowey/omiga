@@ -5,11 +5,12 @@ edition = "2021"
 
 [dependencies]
 omigacore = { path = "../core" }
-chrono = "0.4"
-toml = { version = "0.8", optional = true }
-serde = { version = "1.0", optional = true, features = ["derive"] }
+chrono = { workspace = true }
+toml = { workspace = true, optional = true }
+serde = { workspace = true, optional = true }
 
 [features]
+default = ["tomls"]
 # tomls == toml suffix
 tomls = ["toml"]
 

@@ -24,7 +24,7 @@ use std::path::PathBuf;
 use crate::core::domain::Table;
 use crate::core::error::ReadError;
 
-mod registry;
+pub mod registry;
 
 #[cfg(feature = "tomls")]
 pub mod toml;

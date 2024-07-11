@@ -19,7 +19,6 @@
 // ----------------------------------------------------------------
 
 use std::collections::HashMap;
-use std::mem;
 
 use chrono::NaiveDateTime;
 
@@ -300,29 +299,3 @@ impl<'a> From<&'a Value> for Option<&'a ()> {
         }
     }
 }
-
-// ---------------------------------------------------------------- Merge start
-
-pub fn merge_tables(mut dst: Table, src: Table) -> Table {
-    for (key, src_value) in src {
-        let dst_value = dst.get_mut(&key).map(mem::take);
-
-        match (dst_value, src_value) {
-            (Some(Value::Nested(mut dst_nested)), Value::Nested(src_nested)) => {
-                dst_nested = merge_tables(mem::take(&mut dst_nested), src_nested);
-                dst.insert(key, Value::Nested(dst_nested));
-            }
-            (Some(Value::Array(mut dst_array)), Value::Array(src_array)) => {
-                dst_array.extend(src_array);
-                dst.insert(key, Value::Array(dst_array));
-            }
-            (_, other_value) => {
-                dst.insert(key, other_value);
-            }
-        }
-    }
-
-    dst
-}
-
-// ---------------------------------------------------------------- Merge end
