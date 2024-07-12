@@ -22,7 +22,7 @@ use std::fs;
 use std::path::PathBuf;
 
 use crate::core::domain::Table;
-use crate::core::error::ReadError;
+use crate::core::error::FileError;
 
 pub mod registry;
 
@@ -36,14 +36,14 @@ pub trait ConfigReader {
     fn suffix(&self) -> String;
     fn supports(&self, suffix: &str) -> bool;
 
-    fn read_from_str(&self, data: &str) -> Result<Table, ReadError>;
+    fn read_from_str(&self, data: &str) -> Result<Table, FileError>;
 
-    fn read_from_path(&self, path: &str) -> Result<Table, ReadError> {
+    fn read_from_path(&self, path: &str) -> Result<Table, FileError> {
         let canon = PathBuf::from(path)
             .canonicalize()
-            .map_err(|_| ReadError::InvalidPath(path.to_string()))?;
+            .map_err(|_| FileError::InvalidPath(path.to_string()))?;
         let content =
-            fs::read_to_string(canon).map_err(|_| ReadError::ReadFailed(path.to_string()))?;
+            fs::read_to_string(canon).map_err(|_| FileError::ReadFailed(path.to_string()))?;
         self.read_from_str(&content)
     }
 }

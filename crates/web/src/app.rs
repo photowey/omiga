@@ -32,9 +32,43 @@ pub trait Application {
 
 // ----------------------------------------------------------------
 
+#[allow(dead_code)]
 pub struct OmigaApplication {
+    /// Config file name.
+    ///
+    /// * application
+    /// * omiga
+    /// * ...
     configs: Vec<String>,
+    /// Config file profiles active.
+    ///
+    /// * dev
+    /// * test
+    /// * stage
+    /// * prod
+    /// * ...
     profiles: Vec<String>,
+    /// Config file format.
+    ///
+    /// * toml
+    /// * yml | yaml (Unsupported now)
+    /// * json (Unsupported now)
+    /// * properties (Unsupported now)
+    /// * ini (Unsupported now)
+    /// * ...
+    format: Option<String>,
+    /// Search paths.
+    /// * .
+    /// * ./configs
+    /// * ./resources
+    /// * ...
+    search_paths: Vec<String>,
+    /// Application cmd args.
+    ///
+    /// * --omiga.server.port=9320
+    /// * --omiga.application.name=omiga
+    /// * ...
+    kv: Option<Kv>,
 }
 
 impl OmigaApplication {
@@ -44,14 +78,26 @@ impl OmigaApplication {
 
     // omiga start --omiga.server.port=9320
     //               ^~~~ k/v
-    pub fn walk(/*tmp*/ _opts: Kv) -> OmigaApplicationBuilder {
+    pub fn walk(/*tmp*/ _kv_args: Kv) -> OmigaApplicationBuilder {
         panic!("Unsupported now.")
     }
 
     // ----------------------------------------------------------------
 
-    pub fn new(configs: Vec<String>, profiles: Vec<String>) -> Self {
-        Self { configs, profiles }
+    pub fn new(
+        configs: Vec<String>,
+        profiles: Vec<String>,
+        format: Option<String>,
+        search_paths: Vec<String>,
+        kv: Option<Kv>,
+    ) -> Self {
+        Self {
+            configs,
+            profiles,
+            format,
+            search_paths,
+            kv,
+        }
     }
 
     // ----------------------------------------------------------------
@@ -91,10 +137,42 @@ impl Application for OmigaApplication {
 // ----------------------------------------------------------------
 
 pub struct OmigaApplicationBuilder {
+    /// Config file name.
+    ///
+    /// * application
+    /// * omiga
+    /// * ...
     configs: Vec<String>,
+    /// Config file profiles active.
+    ///
+    /// * dev
+    /// * test
+    /// * stage
+    /// * prod
+    /// * ...
     profiles: Vec<String>,
-    suffix: Option<String>,
+    /// Config file format.
+    ///
+    /// * toml
+    /// * yml | yaml (Unsupported now)
+    /// * json (Unsupported now)
+    /// * properties (Unsupported now)
+    /// * ini (Unsupported now)
+    /// * ...
+    format: Option<String>,
+    /// Search paths.
+    ///
+    /// * .
+    /// * ./configs
+    /// * ./resources
+    /// * ...
     search_paths: Vec<String>,
+    /// Application cmd args.
+    ///
+    /// * --omiga.server.port=9320
+    /// * --omiga.application.name=omiga
+    /// * ...
+    kv: Option<Kv>,
 }
 
 impl OmigaApplicationBuilder {
@@ -102,8 +180,9 @@ impl OmigaApplicationBuilder {
         Self {
             configs: Vec::new(),
             profiles: vec![SIGMA_CORE_PROFILE_ACTIVES_DEFAULT.to_string()],
-            suffix: Some(SIGMA_CORE_CONFIG_FILE_SUFFIX_DEFAULT.to_string()),
+            format: Some(SIGMA_CORE_CONFIG_FILE_SUFFIX_DEFAULT.to_string()),
             search_paths: Vec::new(),
+            kv: None,
         }
     }
 
@@ -138,8 +217,8 @@ impl OmigaApplicationBuilder {
 
     // ----------------------------------------------------------------
 
-    pub fn suffix(mut self, suffix: String) -> Self {
-        self.suffix = Some(suffix);
+    pub fn format(mut self, format: String) -> Self {
+        self.format = Some(format);
 
         self
     }
@@ -159,7 +238,13 @@ impl OmigaApplicationBuilder {
     // ----------------------------------------------------------------
 
     pub fn build(self) -> OmigaApplication {
-        OmigaApplication::new(self.configs, self.profiles)
+        OmigaApplication::new(
+            self.configs,
+            self.profiles,
+            self.format,
+            self.search_paths,
+            self.kv,
+        )
     }
 }
 

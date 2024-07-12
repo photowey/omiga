@@ -19,6 +19,7 @@
 // ----------------------------------------------------------------
 
 use std::f32::consts::PI;
+use std::path::Path;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use crate::core::domain::{Table, Value};
@@ -109,6 +110,81 @@ fn test_table_merge_tables() {
     table_sentinel.insert("replaced".to_string(), Value::IntU128(seed));
 
     assert_eq!(merged_table, table_sentinel);
+}
+
+// ----------------------------------------------------------------
+
+#[test]
+#[cfg(unix)]
+fn test_file_path_os_unix() {
+    let path = "/opt/ppp/configs/omiga";
+    let file_path = Path::new(&path);
+    let parent_path = file_path.parent().unwrap();
+    let file_stem = file_path.file_stem().unwrap();
+
+    assert_eq!("/opt/ppp/configs", parent_path.to_str().unwrap());
+    assert_eq!("omiga", file_stem.to_str().unwrap());
+    assert_eq!("omiga", file_stem.to_string_lossy())
+}
+
+#[test]
+#[cfg(windows)]
+fn test_file_path_os_windows() {
+    let path = "C:\\rust\\dev\\configs\\omiga";
+    let file_path = Path::new(&path);
+    let parent_path = file_path.parent().unwrap();
+    let file_stem = file_path.file_stem().unwrap();
+
+    assert_eq!("C:\\rust\\dev\\configs", parent_path.to_str().unwrap());
+    assert_eq!("omiga", file_stem.to_str().unwrap());
+    assert_eq!("omiga", file_stem.to_string_lossy())
+}
+
+// ----------------------------------------------------------------
+
+#[test]
+#[cfg(unix)]
+fn test_file_os_unix() {
+    let path = "/opt/ppp/configs/omiga.toml";
+    let file_path = Path::new(&path);
+    let parent_path = file_path.parent().unwrap();
+
+    assert_eq!("/opt/ppp/configs", parent_path.to_str().unwrap());
+    assert_eq!("omiga.toml", file_path.file_name().unwrap());
+}
+
+#[test]
+#[cfg(windows)]
+fn test_file_os_windows() {
+    let path = "C:\\rust\\dev\\configs\\omiga.toml";
+    let file_path = Path::new(&path);
+    let parent_path = file_path.parent().unwrap();
+
+    assert_eq!("C:\\rust\\dev\\configs", parent_path.to_str().unwrap());
+    assert_eq!("omiga.toml", file_path.file_name().unwrap());
+    assert_eq!("omiga.toml", file_path.file_name().unwrap());
+}
+
+// ----------------------------------------------------------------
+
+#[test]
+#[cfg(unix)]
+fn test_path_os_unix() {
+    let file_path_absolute = Path::new("/opt/ppp/configs/omiga.toml");
+    let file_path_relative = Path::new("omiga.toml");
+
+    assert!(file_path_absolute.is_absolute());
+    assert!(file_path_relative.is_relative());
+}
+
+#[test]
+#[cfg(windows)]
+fn test_path_os_windows() {
+    let file_path_absolute = Path::new("C:\\rust\\dev\\configs\\omiga.toml");
+    let file_path_relative = Path::new("omiga.toml");
+
+    assert!(file_path_absolute.is_absolute());
+    assert!(file_path_relative.is_relative());
 }
 
 // ----------------------------------------------------------------

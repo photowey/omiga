@@ -50,7 +50,7 @@ impl Error for ConfigError {}
 // ----------------------------------------------------------------
 
 #[derive(Debug, PartialEq)]
-pub enum ReadError {
+pub enum FileError {
     InvalidPath(String),
     InvalidFile(String),
     ReaderNotFound(String),
@@ -59,23 +59,23 @@ pub enum ReadError {
     ParseFailed(String, String),
 }
 
-impl fmt::Display for ReadError {
+impl fmt::Display for FileError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            ReadError::InvalidPath(path) => write!(f, "Omiga: invalid path:[{}]", path),
-            ReadError::InvalidFile(file) => write!(f, "Omiga: invalid config file type:[{}]", file),
-            ReadError::ReaderNotFound(suffix) => {
+            FileError::InvalidPath(path) => write!(f, "Omiga: invalid path:[{}]", path),
+            FileError::InvalidFile(file) => write!(f, "Omiga: invalid config file type:[{}]", file),
+            FileError::ReaderNotFound(suffix) => {
                 write!(f, "Omiga: reader not found, suffix: [{}]", suffix)
             }
-            ReadError::ReadFailed(path) => {
+            FileError::ReadFailed(path) => {
                 write!(f, "Omiga: failed to read config file, path:[{}]", path)
             }
-            ReadError::IncorrectFormat(format) => write!(
+            FileError::IncorrectFormat(format) => write!(
                 f,
                 "Omiga: incorrect [{}] format, missing table data.",
                 format
             ),
-            ReadError::ParseFailed(format, message) => write!(
+            FileError::ParseFailed(format, message) => write!(
                 f,
                 "Omiga: failed to parse [{}] config file, message: [{}]",
                 format, message
@@ -84,4 +84,4 @@ impl fmt::Display for ReadError {
     }
 }
 
-impl Error for ReadError {}
+impl Error for FileError {}

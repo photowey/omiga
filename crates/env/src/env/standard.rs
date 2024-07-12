@@ -18,10 +18,13 @@
 
 // ----------------------------------------------------------------
 
+use std::borrow::Cow;
 use std::collections::HashMap;
+use std::path::Path;
 
 use omigacore::constants::DOT;
 
+use crate::core::error::FileError;
 use crate::core::{
     domain::{Table, Value},
     error::ConfigError,
@@ -54,18 +57,40 @@ impl StandardEnvironment {
     #[cfg(feature = "tomls")]
     pub fn new() -> Self {
         let env_table = try_load_env_variables();
-        let mut configurer = Self::mixed(
+        let mut configer = Self::mixed(
             Some(env_table),
             Some(Box::<ConfigReaderRegistry>::default()),
         );
+        configer.register_toml_reader();
 
-        configurer.register_toml_reader();
-        configurer
+        configer
     }
 
     // ----------------------------------------------------------------
 
-    pub fn mixed(table_opt: Option<Table>, registry: Option<Box<dyn ReaderRegistry>>) -> Self {
+    pub fn table(mut self, table: Table) -> Self {
+        self.merge_table(table);
+
+        self
+    }
+
+    pub fn registry(mut self, registry_opt: Option<Box<dyn ReaderRegistry>>) -> Self {
+        if let Some(registry) = registry_opt {
+            self.registry = Some(registry);
+        }
+
+        self
+    }
+
+    // ----------------------------------------------------------------
+
+    pub fn merge_table(&mut self, table: Table) {
+        self.ctx = merge_tables(self.ctx.clone(), table)
+    }
+
+    // ---------------------------------------------------------------- private
+
+    fn mixed(table_opt: Option<Table>, registry: Option<Box<dyn ReaderRegistry>>) -> Self {
         if let Some(table) = table_opt {
             return Self {
                 ctx: table,
@@ -73,65 +98,11 @@ impl StandardEnvironment {
             };
         }
 
-        let env_table = try_load_env_variables();
         Self {
-            ctx: env_table,
+            ctx: Table::new(),
             registry,
         }
     }
-
-    pub fn mixed_with_env_variables(
-        table_opt: Option<Table>,
-        registry: Option<Box<dyn ReaderRegistry>>,
-    ) -> Self {
-        if let Some(table) = table_opt {
-            let env_table = try_load_env_variables();
-            let merged_table = merge_tables(table, env_table);
-            return Self {
-                ctx: merged_table,
-                registry,
-            };
-        }
-
-        let env_table = try_load_env_variables();
-        Self {
-            ctx: env_table,
-            registry,
-        }
-    }
-
-    // ----------------------------------------------------------------
-
-    #[cfg(not(feature = "tomls"))]
-    pub fn table(table: Table) -> Self {
-        Self::mixed_with_env_variables(Some(table), Some(Box::<ConfigReaderRegistry>::default()))
-    }
-
-    #[cfg(feature = "tomls")]
-    pub fn table(table: Table) -> Self {
-        let mut configurer = Self::mixed_with_env_variables(
-            Some(table),
-            Some(Box::<ConfigReaderRegistry>::default()),
-        );
-
-        configurer.register_toml_reader();
-        configurer
-    }
-
-    // ----------------------------------------------------------------
-
-    pub fn register_table_with_env_variables(&mut self, table: Table) {
-        let env_table = try_load_env_variables();
-        let merged_table = merge_tables(table, env_table);
-
-        self.ctx = merged_table;
-    }
-
-    pub fn merge_table(&mut self, table: Table) {
-        self.ctx = merge_tables(self.ctx.clone(), table)
-    }
-
-    // ---------------------------------------------------------------- private
 
     #[cfg(feature = "tomls")]
     fn register_toml_reader(&mut self) {
@@ -256,5 +227,125 @@ impl DynamicEnvironment for StandardEnvironment {}
 impl Default for StandardEnvironment {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+// ----------------------------------------------------------------
+
+pub struct StandardEnvironmentBuilder {
+    /// Init config table.
+    table: Option<Table>,
+    /// Config reader registry.
+    registry: Option<Box<dyn ReaderRegistry>>,
+    /// Config file paths.
+    ///
+    /// * /opt/app/configs/omiga.yml
+    /// * /opt/app/configs/application.yml
+    /// * omiga.yml -> ./omiga.yml
+    /// * application.yml -> ./application.yml
+    /// * ...
+    paths: Vec<String>,
+    /// Config file search paths.
+    /// * .
+    /// * ./configs
+    /// * ./resources
+    /// * ...
+    search_paths: Vec<String>,
+    /// Config file profiles active.
+    ///
+    /// * dev
+    /// * test
+    /// * stage
+    /// * prod
+    /// * ...
+    profiles: Vec<String>,
+}
+
+impl StandardEnvironmentBuilder {
+    pub fn new() -> Self {
+        Self {
+            table: None,
+            registry: None,
+            paths: Vec::new(),
+            search_paths: Vec::new(),
+            profiles: Vec::new(),
+        }
+    }
+
+    pub fn with_table(mut self, table: Table) -> Self {
+        self.table = Some(table);
+
+        self
+    }
+
+    pub fn with_registry(mut self, registry: Box<dyn ReaderRegistry>) -> Self {
+        self.registry = Some(registry);
+
+        self
+    }
+
+    pub fn with_path(mut self, path: String) -> Self {
+        self.paths.push(path);
+
+        self
+    }
+
+    pub fn with_paths(mut self, paths: Vec<String>) -> Self {
+        self.paths.extend(paths);
+
+        self
+    }
+
+    pub fn with_search_path(mut self, search_path: String) -> Self {
+        self.search_paths.push(search_path);
+
+        self
+    }
+
+    pub fn with_search_paths(mut self, search_paths: Vec<String>) -> Self {
+        self.search_paths.extend(search_paths);
+
+        self
+    }
+
+    pub fn with_profile(mut self, profile: String) -> Self {
+        self.profiles.push(profile);
+
+        self
+    }
+
+    pub fn with_profiles(mut self, profiles: Vec<String>) -> Self {
+        self.profiles.extend(profiles);
+
+        self
+    }
+}
+
+impl StandardEnvironmentBuilder {
+    fn merge_paths(self) {
+        panic!("Unsupported now")
+    }
+
+    pub fn build(self) -> Result<StandardEnvironment, FileError> {
+        self.merge_paths();
+        panic!("Unsupported now")
+    }
+
+    #[allow(dead_code)]
+    fn try_read_config_profile_file(
+        _file_path: &Path,
+        _format: &Cow<str>,
+        _reader: &dyn ConfigReader,
+        _profile: String,
+    ) -> Result<Table, FileError> {
+        panic!("Unsupported now")
+    }
+}
+
+// ----------------------------------------------------------------
+
+impl Default for StandardEnvironmentBuilder {
+    fn default() -> Self {
+        StandardEnvironmentBuilder::new()
     }
 }

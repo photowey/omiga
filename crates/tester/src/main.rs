@@ -18,7 +18,7 @@
 
 // ----------------------------------------------------------------
 
-use tester::kv;
+use tester::cli;
 
 // ----------------------------------------------------------------
 
@@ -38,5 +38,5 @@ fn main() {
 }
 
 fn try_parse_command_line_kv_args() {
-    kv::try_parse_command_line_kv_args()
+    cli::try_parse_command_line_kv_args()
 }

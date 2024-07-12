@@ -26,7 +26,7 @@ use toml::Value;
 use omigacore::constants::{SIGMA_CONFIG_READER_TOML, SIGMA_CONFIG_READER_TOML_SUFFIX};
 
 use crate::core::domain::{OmigaTable, OmigaValue};
-use crate::core::error::ReadError;
+use crate::core::error::FileError;
 use crate::reader::ConfigReader;
 
 // ------------------------------------------------------------
@@ -68,7 +68,7 @@ impl ConfigReader for TomlConfigReader {
         self.suffix.eq(suffix)
     }
 
-    fn read_from_str(&self, data: &str) -> Result<OmigaTable, ReadError> {
+    fn read_from_str(&self, data: &str) -> Result<OmigaTable, FileError> {
         let mut ctx: OmigaTable = OmigaTable::new();
 
         let parsed_rvt: Result<Value, Error> = toml::from_str(data);
@@ -82,11 +82,11 @@ impl ConfigReader for TomlConfigReader {
                     return Ok(ctx);
                 }
 
-                Err(ReadError::IncorrectFormat(
+                Err(FileError::IncorrectFormat(
                     SIGMA_CONFIG_READER_TOML.to_string(),
                 ))
             }
-            Err(err) => Err(ReadError::ParseFailed(
+            Err(err) => Err(FileError::ParseFailed(
                 SIGMA_CONFIG_READER_TOML.to_string(),
                 err.message().to_string(),
             )),
