@@ -23,7 +23,7 @@ use toml::de::Error;
 use toml::value::{Date, Datetime, Time};
 use toml::Value;
 
-use omigacore::constants::{SIGMA_CONFIG_READER_TOML, SIGMA_CONFIG_READER_TOML_SUFFIX};
+use omigacore::constants::{SIGMA_CONFIG_READER_TOML, SIGMA_CONFIG_READER_TOML_FORMAT};
 
 use crate::core::domain::{OmigaTable, OmigaValue};
 use crate::core::error::FileError;
@@ -40,7 +40,7 @@ impl TomlConfigReader {
     fn new() -> Self {
         Self {
             name: SIGMA_CONFIG_READER_TOML.to_string(),
-            suffix: SIGMA_CONFIG_READER_TOML_SUFFIX.to_string(),
+            suffix: SIGMA_CONFIG_READER_TOML_FORMAT.to_string(),
         }
     }
 }

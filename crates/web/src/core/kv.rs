@@ -24,12 +24,14 @@ use std::collections::HashMap;
 
 /// `Omiga` server command k/v args if present.
 pub struct Kv {
-    pub kv: Option<HashMap<String, String>>,
+    pub ctx: Option<HashMap<String, String>>,
 }
 
 impl Kv {
     pub fn new() -> Self {
-        Self { kv: None }
+        Self {
+            ctx: Some(HashMap::new()),
+        }
     }
 }
 

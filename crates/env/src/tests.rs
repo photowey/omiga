@@ -24,6 +24,7 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 use crate::core::domain::{Table, Value};
 use crate::core::table::merge_tables;
+use crate::env;
 
 // ----------------------------------------------------------------
 
@@ -185,6 +186,20 @@ fn test_path_os_windows() {
 
     assert!(file_path_absolute.is_absolute());
     assert!(file_path_relative.is_relative());
+}
+
+// ----------------------------------------------------------------
+
+#[test]
+fn test_is_default_profile_active() {
+    assert!(env::is_default_profile("default"));
+    assert!(!env::is_default_profile("dev"))
+}
+
+#[test]
+fn test_is_not_default_profile_active() {
+    assert!(env::is_not_default_profile("dev"));
+    assert!(!env::is_not_default_profile("default"))
 }
 
 // ----------------------------------------------------------------

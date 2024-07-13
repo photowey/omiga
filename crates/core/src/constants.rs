@@ -25,18 +25,20 @@ pub const SIGMA_CORE_PROFILE_ACTIVES_DEFAULT: &str = "default";
 
 // omiga.toml | omiga-dev.toml ...
 pub const SIGMA_CORE_CONFIG_FILE_NAME_DEFAULT: &str = "omiga";
+pub const SIGMA_CORE_CONFIG_FILE_NAME_APPLICATION_DEFAULT: &str = "application";
 // toml* | yml/yaml | json | properties | ini | ...
-pub const SIGMA_CORE_CONFIG_FILE_SUFFIX_DEFAULT: &str = "toml";
+pub const SIGMA_CORE_CONFIG_FILE_FORMAT_DEFAULT: &str = "toml";
 pub const SIGMA_CORE_CONFIG_FILE_SEARCH_PATHS_DEFAULT: &str = ".,configs,resources";
 
 // ----------------------------------------------------------------
 
 pub const SIGMA_CONFIG_READER_TOML: &str = "TOML";
-pub const SIGMA_CONFIG_READER_TOML_SUFFIX: &str = "toml";
+pub const SIGMA_CONFIG_READER_TOML_FORMAT: &str = "toml";
 
 // ----------------------------------------------------------------
 
-pub const DOT: char = '.';
+pub const DOT: &str = ".";
+pub const COMMA: &str = ",";
 
 // ----------------------------------------------------------------
 

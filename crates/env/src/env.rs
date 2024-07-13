@@ -20,6 +20,8 @@
 
 use std::env;
 
+use omigacore::constants::SIGMA_CORE_PROFILE_ACTIVES_DEFAULT;
+
 use crate::core::domain::{Table, Value};
 use crate::core::error::ConfigError;
 use crate::reader::ConfigReader;
@@ -58,4 +60,12 @@ pub fn try_load_env_variables() -> Table {
     }
 
     table
+}
+
+pub fn is_not_default_profile(profile: &str) -> bool {
+    !is_default_profile(profile)
+}
+
+pub fn is_default_profile(profile: &str) -> bool {
+    profile == SIGMA_CORE_PROFILE_ACTIVES_DEFAULT
 }

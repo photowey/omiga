@@ -18,9 +18,7 @@
 
 // ----------------------------------------------------------------
 
-use omigacore::constants::{
-    SIGMA_CORE_CONFIG_FILE_SUFFIX_DEFAULT, SIGMA_CORE_PROFILE_ACTIVES_DEFAULT,
-};
+use omigacore::constants::{COMMA, SIGMA_CORE_PROFILE_ACTIVES_DEFAULT};
 
 use crate::core::kv::Kv;
 
@@ -56,7 +54,15 @@ pub struct OmigaApplication {
     /// * properties (Unsupported now)
     /// * ini (Unsupported now)
     /// * ...
-    format: Option<String>,
+    formats: Vec<String>,
+    /// Application cmd args for specific configs.
+    ///
+    /// * /opt/configs/omiga.yml
+    /// * /opt/configs/omiga-dev.yml
+    /// * /opt/configs/application.yml
+    /// * /opt/configs/application-dev.yml
+    /// * ...
+    paths: Vec<String>,
     /// Search paths.
     /// * .
     /// * ./configs
@@ -87,14 +93,16 @@ impl OmigaApplication {
     pub fn new(
         configs: Vec<String>,
         profiles: Vec<String>,
-        format: Option<String>,
+        formats: Vec<String>,
+        paths: Vec<String>,
         search_paths: Vec<String>,
         kv: Option<Kv>,
     ) -> Self {
         Self {
             configs,
             profiles,
-            format,
+            formats,
+            paths,
             search_paths,
             kv,
         }
@@ -103,7 +111,7 @@ impl OmigaApplication {
     // ----------------------------------------------------------------
 
     pub fn profiles_active(&self) -> String {
-        self.profiles.join(",")
+        self.profiles.join(COMMA)
     }
 
     pub fn profiles_active_array(&self) -> Vec<String> {
@@ -113,7 +121,7 @@ impl OmigaApplication {
     // ----------------------------------------------------------------
 
     pub fn configs(&self) -> String {
-        self.configs.join(",")
+        self.configs.join(COMMA)
     }
 
     pub fn configs_array(&self) -> Vec<String> {
@@ -159,9 +167,16 @@ pub struct OmigaApplicationBuilder {
     /// * properties (Unsupported now)
     /// * ini (Unsupported now)
     /// * ...
-    format: Option<String>,
-    /// Search paths.
+    formats: Vec<String>,
+    /// Application cmd args for specific configs.
     ///
+    /// * /opt/configs/omiga.yml
+    /// * /opt/configs/omiga-dev.yml
+    /// * /opt/configs/application.yml
+    /// * /opt/configs/application-dev.yml
+    /// * ...
+    paths: Vec<String>,
+    /// Search paths.
     /// * .
     /// * ./configs
     /// * ./resources
@@ -180,9 +195,10 @@ impl OmigaApplicationBuilder {
         Self {
             configs: Vec::new(),
             profiles: vec![SIGMA_CORE_PROFILE_ACTIVES_DEFAULT.to_string()],
-            format: Some(SIGMA_CORE_CONFIG_FILE_SUFFIX_DEFAULT.to_string()),
+            formats: Vec::new(),
+            paths: Vec::new(),
             search_paths: Vec::new(),
-            kv: None,
+            kv: Some(Kv::new()),
         }
     }
 
@@ -218,12 +234,26 @@ impl OmigaApplicationBuilder {
     // ----------------------------------------------------------------
 
     pub fn format(mut self, format: String) -> Self {
-        self.format = Some(format);
+        self.formats.push(format);
 
         self
     }
 
-    pub fn search_path(mut self, search_paths: Vec<String>) -> Self {
+    pub fn formats(mut self, format: Vec<String>) -> Self {
+        self.formats.extend(format);
+
+        self
+    }
+
+    // ----------------------------------------------------------------
+
+    pub fn search_path(mut self, search_path: String) -> Self {
+        self.search_paths.push(search_path);
+
+        self
+    }
+
+    pub fn search_paths(mut self, search_paths: Vec<String>) -> Self {
         self.search_paths.extend(search_paths);
 
         self
@@ -241,7 +271,8 @@ impl OmigaApplicationBuilder {
         OmigaApplication::new(
             self.configs,
             self.profiles,
-            self.format,
+            self.formats,
+            self.paths,
             self.search_paths,
             self.kv,
         )

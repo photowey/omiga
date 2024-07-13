@@ -19,10 +19,14 @@
 // ----------------------------------------------------------------
 
 use std::borrow::Cow;
-use std::collections::HashMap;
-use std::path::Path;
+use std::collections::{HashMap, HashSet};
+use std::path::{Path, PathBuf, MAIN_SEPARATOR};
+use std::{env, fs};
 
-use omigacore::constants::DOT;
+use omigacore::constants::{
+    DOT, SIGMA_CORE_CONFIG_FILE_FORMAT_DEFAULT, SIGMA_CORE_CONFIG_FILE_NAME_APPLICATION_DEFAULT,
+    SIGMA_CORE_CONFIG_FILE_NAME_DEFAULT, SIGMA_CORE_PROFILE_ACTIVES_DEFAULT,
+};
 
 use crate::core::error::FileError;
 use crate::core::{
@@ -30,7 +34,7 @@ use crate::core::{
     error::ConfigError,
     table::merge_tables,
 };
-use crate::env::{try_load_env_variables, DynamicEnvironment, Environment};
+use crate::env::{is_default_profile, try_load_env_variables, DynamicEnvironment, Environment};
 use crate::reader::{
     registry::{ConfigReaderRegistry, ReaderRegistry},
     toml::TomlConfigReader,
@@ -244,13 +248,13 @@ pub struct StandardEnvironmentBuilder {
     /// * omiga.yml -> ./omiga.yml
     /// * application.yml -> ./application.yml
     /// * ...
-    paths: Vec<String>,
-    /// Config file search paths.
-    /// * .
-    /// * ./configs
-    /// * ./resources
+    paths: HashSet<String>,
+    /// Config file name.
+    ///
+    /// * omiga
+    /// * application
     /// * ...
-    search_paths: Vec<String>,
+    configs: Vec<String>,
     /// Config file profiles active.
     ///
     /// * dev
@@ -259,6 +263,21 @@ pub struct StandardEnvironmentBuilder {
     /// * prod
     /// * ...
     profiles: Vec<String>,
+    /// Config file format.
+    ///
+    /// * toml
+    /// * yml | yaml (Unsupported now)
+    /// * json (Unsupported now)
+    /// * properties (Unsupported now)
+    /// * ini (Unsupported now)
+    /// * ...
+    formats: Vec<String>,
+    /// Config file search paths.
+    /// * .
+    /// * ./configs
+    /// * ./resources
+    /// * ...
+    search_paths: Vec<String>,
 }
 
 impl StandardEnvironmentBuilder {
@@ -266,9 +285,11 @@ impl StandardEnvironmentBuilder {
         Self {
             table: None,
             registry: None,
-            paths: Vec::new(),
+            paths: HashSet::new(),
+            configs: Vec::new(),
+            profiles: vec![SIGMA_CORE_PROFILE_ACTIVES_DEFAULT.to_string()],
+            formats: Vec::new(),
             search_paths: Vec::new(),
-            profiles: Vec::new(),
         }
     }
 
@@ -285,13 +306,25 @@ impl StandardEnvironmentBuilder {
     }
 
     pub fn with_path(mut self, path: String) -> Self {
-        self.paths.push(path);
+        self.paths.insert(path);
 
         self
     }
 
     pub fn with_paths(mut self, paths: Vec<String>) -> Self {
         self.paths.extend(paths);
+
+        self
+    }
+
+    pub fn with_config(mut self, config: String) -> Self {
+        self.configs.push(config);
+
+        self
+    }
+
+    pub fn with_configs(mut self, configs: Vec<String>) -> Self {
+        self.configs.extend(configs);
 
         self
     }
@@ -322,14 +355,97 @@ impl StandardEnvironmentBuilder {
 }
 
 impl StandardEnvironmentBuilder {
-    fn merge_paths(self) {
+    pub fn build(&mut self) -> Result<StandardEnvironment, FileError> {
+        self.try_populate_defaults();
+        self.try_merge_paths();
+
+        self.on_build()
+    }
+
+    // ----------------------------------------------------------------
+
+    fn try_populate_defaults(&mut self) {
+        if self.configs.is_empty() {
+            self.configs
+                .push(SIGMA_CORE_CONFIG_FILE_NAME_DEFAULT.to_string());
+            self.configs
+                .push(SIGMA_CORE_CONFIG_FILE_NAME_APPLICATION_DEFAULT.to_string());
+        }
+
+        if self.formats.is_empty() {
+            self.formats
+                .push(SIGMA_CORE_CONFIG_FILE_FORMAT_DEFAULT.to_string());
+        }
+    }
+
+    // ----------------------------------------------------------------
+
+    fn try_merge_paths(&mut self) {
+        let current_dir = env::current_dir().unwrap();
+        let separator = MAIN_SEPARATOR.to_string();
+
+        let mut new_paths = HashSet::new();
+
+        for search_path in &self.search_paths {
+            let base_path = if Path::new(search_path).is_absolute() {
+                PathBuf::from(search_path)
+            } else {
+                current_dir.join(search_path)
+            };
+
+            for config in &self.configs {
+                for format in &self.formats {
+                    for profile in &self.profiles {
+                        if is_default_profile(profile) {
+                            continue;
+                        }
+                        let path = format!(
+                            "{}{}{}-{}.{}",
+                            base_path.to_string_lossy(),
+                            separator,
+                            config,
+                            profile,
+                            format
+                        );
+                        new_paths.insert(path);
+                    }
+                    let path = format!(
+                        "{}{}{}.{}",
+                        base_path.to_string_lossy(),
+                        separator,
+                        config,
+                        format
+                    );
+                    new_paths.insert(path);
+                }
+            }
+        }
+
+        self.paths.extend(new_paths);
+        self.paths = self
+            .paths
+            .iter()
+            .map(|path| {
+                let absolute_path = if Path::new(path).is_absolute() {
+                    PathBuf::from(path)
+                } else {
+                    current_dir.join(path)
+                };
+                match fs::canonicalize(&absolute_path) {
+                    Ok(clean_path) => clean_path.to_string_lossy().to_string(),
+                    Err(_) => absolute_path.to_string_lossy().to_string(),
+                }
+            })
+            .collect();
+    }
+
+    // ----------------------------------------------------------------
+
+    fn on_build(&mut self) -> Result<StandardEnvironment, FileError> {
         panic!("Unsupported now")
     }
 
-    pub fn build(self) -> Result<StandardEnvironment, FileError> {
-        self.merge_paths();
-        panic!("Unsupported now")
-    }
+    // ----------------------------------------------------------------
 
     #[allow(dead_code)]
     fn try_read_config_profile_file(
