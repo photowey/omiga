@@ -61,13 +61,13 @@ impl StandardEnvironment {
     #[cfg(feature = "tomls")]
     pub fn new() -> Self {
         let env_table = try_load_env_variables();
-        let mut configer = Self::mixed(
+        let mut configure = Self::mixed(
             Some(env_table),
             Some(Box::<ConfigReaderRegistry>::default()),
         );
-        configer.register_toml_reader();
+        configure.register_toml_reader();
 
-        configer
+        configure
     }
 
     // ----------------------------------------------------------------
