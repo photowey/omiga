@@ -14,29 +14,8 @@
  * limitations under the License.
  */
 
-// core/kv
+// lib
 
 // ----------------------------------------------------------------
 
-use std::collections::HashMap;
-
-// ----------------------------------------------------------------
-
-/// `Omiga` server command k/v args if present.
-pub struct Kv {
-    pub ctx: Option<HashMap<String, String>>,
-}
-
-impl Kv {
-    pub fn new() -> Self {
-        Self {
-            ctx: Some(HashMap::new()),
-        }
-    }
-}
-
-impl Default for Kv {
-    fn default() -> Self {
-        Self::new()
-    }
-}
+pub mod app;

@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-// omigaweb/app
+// omigaapp/app
 
 // ----------------------------------------------------------------
 
 use omigacore::constants::{COMMA, SIGMA_CORE_PROFILE_ACTIVES_DEFAULT};
-
-use crate::core::kv::Kv;
+use omigacore::model::kv::Kv;
 
 // ----------------------------------------------------------------
 

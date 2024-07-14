@@ -5,6 +5,7 @@ resolver = "2"
 
 # @formatter:off
 members = [
+    "crates/app",
     "crates/bean",
     "crates/core",
     "crates/ctx",

@@ -18,8 +18,8 @@
 
 // ----------------------------------------------------------------
 
+use omigaapp::app::{Application, OmigaApplication};
 use omigacore::constants::SIGMA_CORE_PROFILE_ACTIVES_DEFAULT;
-use omigaweb::app::{Application, OmigaApplication};
 
 // ----------------------------------------------------------------
 

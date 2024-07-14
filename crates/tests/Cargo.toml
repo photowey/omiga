@@ -7,11 +7,12 @@ license = "Apache-2.0"
 publish = false
 
 [dependencies]
-macroattr = { path = "../macroattr" }
-omigacore = { path = "../core" }
-macrofn = { path = "../macrofn" }
+omigaapp = { path = "../app" }
 omigabean = { path = "../bean" }
+omigacore = { path = "../core" }
 omigactx = { path = "../ctx" }
 omigaenv = { path = "../env" }
+macroattr = { path = "../macroattr" }
+macrofn = { path = "../macrofn" }
 omigatesting = { path = "../testing" }
 omigaweb = { path = "../web" }
