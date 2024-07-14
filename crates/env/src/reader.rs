@@ -19,9 +19,10 @@
 // ----------------------------------------------------------------
 
 use std::fs;
-use std::path::PathBuf;
+use std::io::ErrorKind;
 
-use crate::core::domain::Table;
+use omigacore::collection::table::Table;
+
 use crate::core::error::FileError;
 
 pub mod registry;
@@ -39,11 +40,15 @@ pub trait ConfigReader {
     fn read_from_str(&self, data: &str) -> Result<Table, FileError>;
 
     fn read_from_path(&self, path: &str) -> Result<Table, FileError> {
-        let canon = PathBuf::from(path)
-            .canonicalize()
-            .map_err(|_| FileError::InvalidPath(path.to_string()))?;
-        let content =
-            fs::read_to_string(canon).map_err(|_| FileError::ReadFailed(path.to_string()))?;
-        self.read_from_str(&content)
+        match fs::read_to_string(path) {
+            Ok(data) => self.read_from_str(&data),
+            Err(err) => {
+                if err.kind() == ErrorKind::NotFound {
+                    Err(FileError::FileNotFound(path.to_string()))
+                } else {
+                    Err(FileError::InvalidPath(path.to_string()))
+                }
+            }
+        }
     }
 }

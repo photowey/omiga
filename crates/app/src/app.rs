@@ -18,6 +18,9 @@
 
 // ----------------------------------------------------------------
 
+use std::collections::HashSet;
+
+use omigacore::collection::hashset::hashset_join;
 use omigacore::constants::{COMMA, SIGMA_CORE_PROFILE_ACTIVES_DEFAULT};
 use omigacore::model::kv::Kv;
 
@@ -36,7 +39,7 @@ pub struct OmigaApplication {
     /// * application
     /// * omiga
     /// * ...
-    configs: Vec<String>,
+    configs: HashSet<String>,
     /// Config file profiles active.
     ///
     /// * dev
@@ -44,7 +47,7 @@ pub struct OmigaApplication {
     /// * stage
     /// * prod
     /// * ...
-    profiles: Vec<String>,
+    profiles: HashSet<String>,
     /// Config file format.
     ///
     /// * toml
@@ -53,7 +56,7 @@ pub struct OmigaApplication {
     /// * properties (Unsupported now)
     /// * ini (Unsupported now)
     /// * ...
-    formats: Vec<String>,
+    formats: HashSet<String>,
     /// Application cmd args for specific configs.
     ///
     /// * /opt/configs/omiga.yml
@@ -61,13 +64,13 @@ pub struct OmigaApplication {
     /// * /opt/configs/application.yml
     /// * /opt/configs/application-dev.yml
     /// * ...
-    paths: Vec<String>,
+    paths: HashSet<String>,
     /// Search paths.
     /// * .
     /// * ./configs
     /// * ./resources
     /// * ...
-    search_paths: Vec<String>,
+    search_paths: HashSet<String>,
     /// Application cmd args.
     ///
     /// * --omiga.server.port=9320
@@ -90,11 +93,11 @@ impl OmigaApplication {
     // ----------------------------------------------------------------
 
     pub fn new(
-        configs: Vec<String>,
-        profiles: Vec<String>,
-        formats: Vec<String>,
-        paths: Vec<String>,
-        search_paths: Vec<String>,
+        configs: HashSet<String>,
+        profiles: HashSet<String>,
+        formats: HashSet<String>,
+        paths: HashSet<String>,
+        search_paths: HashSet<String>,
         kv: Option<Kv>,
     ) -> Self {
         Self {
@@ -110,20 +113,20 @@ impl OmigaApplication {
     // ----------------------------------------------------------------
 
     pub fn profiles_active(&self) -> String {
-        self.profiles.join(COMMA)
+        hashset_join(&self.profiles, COMMA)
     }
 
-    pub fn profiles_active_array(&self) -> Vec<String> {
+    pub fn profiles_active_array(&self) -> HashSet<String> {
         self.profiles.clone()
     }
 
     // ----------------------------------------------------------------
 
     pub fn configs(&self) -> String {
-        self.configs.join(COMMA)
+        hashset_join(&self.configs, COMMA)
     }
 
-    pub fn configs_array(&self) -> Vec<String> {
+    pub fn configs_array(&self) -> HashSet<String> {
         self.configs.clone()
     }
 
@@ -149,7 +152,7 @@ pub struct OmigaApplicationBuilder {
     /// * application
     /// * omiga
     /// * ...
-    configs: Vec<String>,
+    configs: HashSet<String>,
     /// Config file profiles active.
     ///
     /// * dev
@@ -157,7 +160,7 @@ pub struct OmigaApplicationBuilder {
     /// * stage
     /// * prod
     /// * ...
-    profiles: Vec<String>,
+    profiles: HashSet<String>,
     /// Config file format.
     ///
     /// * toml
@@ -166,7 +169,7 @@ pub struct OmigaApplicationBuilder {
     /// * properties (Unsupported now)
     /// * ini (Unsupported now)
     /// * ...
-    formats: Vec<String>,
+    formats: HashSet<String>,
     /// Application cmd args for specific configs.
     ///
     /// * /opt/configs/omiga.yml
@@ -174,13 +177,13 @@ pub struct OmigaApplicationBuilder {
     /// * /opt/configs/application.yml
     /// * /opt/configs/application-dev.yml
     /// * ...
-    paths: Vec<String>,
+    paths: HashSet<String>,
     /// Search paths.
     /// * .
     /// * ./configs
     /// * ./resources
     /// * ...
-    search_paths: Vec<String>,
+    search_paths: HashSet<String>,
     /// Application cmd args.
     ///
     /// * --omiga.server.port=9320
@@ -191,12 +194,15 @@ pub struct OmigaApplicationBuilder {
 
 impl OmigaApplicationBuilder {
     pub fn new() -> Self {
+        let mut default_profiles = HashSet::new();
+        default_profiles.insert(SIGMA_CORE_PROFILE_ACTIVES_DEFAULT.to_string());
+
         Self {
-            configs: Vec::new(),
-            profiles: vec![SIGMA_CORE_PROFILE_ACTIVES_DEFAULT.to_string()],
-            formats: Vec::new(),
-            paths: Vec::new(),
-            search_paths: Vec::new(),
+            configs: HashSet::new(),
+            profiles: default_profiles,
+            formats: HashSet::new(),
+            paths: HashSet::new(),
+            search_paths: HashSet::new(),
             kv: Some(Kv::new()),
         }
     }
@@ -204,7 +210,7 @@ impl OmigaApplicationBuilder {
     // ----------------------------------------------------------------
 
     pub fn config(mut self, config: String) -> Self {
-        self.configs.push(config);
+        self.configs.insert(config);
 
         self
     }
@@ -219,7 +225,7 @@ impl OmigaApplicationBuilder {
 
     pub fn profile(mut self, profile: String) -> Self {
         self.profiles.retain(|p| Self::is_not_default_profile(p));
-        self.profiles.push(profile);
+        self.profiles.insert(profile);
 
         self
     }
@@ -233,7 +239,7 @@ impl OmigaApplicationBuilder {
     // ----------------------------------------------------------------
 
     pub fn format(mut self, format: String) -> Self {
-        self.formats.push(format);
+        self.formats.insert(format);
 
         self
     }
@@ -247,7 +253,7 @@ impl OmigaApplicationBuilder {
     // ----------------------------------------------------------------
 
     pub fn search_path(mut self, search_path: String) -> Self {
-        self.search_paths.push(search_path);
+        self.search_paths.insert(search_path);
 
         self
     }

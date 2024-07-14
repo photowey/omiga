@@ -18,22 +18,20 @@
 
 // ----------------------------------------------------------------
 
-use std::borrow::Cow;
 use std::collections::{HashMap, HashSet};
+use std::io::ErrorKind;
 use std::path::{Path, PathBuf, MAIN_SEPARATOR};
 use std::{env, fs};
 
+use omigacore::collection::table::{Table, Value};
 use omigacore::constants::{
-    DOT, SIGMA_CORE_CONFIG_FILE_FORMAT_DEFAULT, SIGMA_CORE_CONFIG_FILE_NAME_APPLICATION_DEFAULT,
-    SIGMA_CORE_CONFIG_FILE_NAME_DEFAULT, SIGMA_CORE_PROFILE_ACTIVES_DEFAULT,
+    DOT, SIGMA_CONFIG_READER_TOML_FORMAT, SIGMA_CORE_CONFIG_FILE_FORMAT_DEFAULT,
+    SIGMA_CORE_CONFIG_FILE_NAME_APPLICATION_DEFAULT, SIGMA_CORE_CONFIG_FILE_NAME_DEFAULT,
+    SIGMA_CORE_PROFILE_ACTIVES_DEFAULT,
 };
 
 use crate::core::error::FileError;
-use crate::core::{
-    domain::{Table, Value},
-    error::ConfigError,
-    table::merge_tables,
-};
+use crate::core::{error::ConfigError, merger::merge_tables};
 use crate::env::{is_default_profile, try_load_env_variables, DynamicEnvironment, Environment};
 use crate::reader::{
     registry::{ConfigReaderRegistry, ReaderRegistry},
@@ -45,43 +43,52 @@ use crate::reader::{
 
 pub struct StandardEnvironment {
     ctx: Table,
-    registry: Option<Box<dyn ReaderRegistry>>,
+    registry: Box<dyn ReaderRegistry>,
 }
+
+// ----------------------------------------------------------------
+
+impl StandardEnvironment {
+    pub fn builder() -> StandardEnvironmentBuilder {
+        StandardEnvironmentBuilder::default()
+    }
+}
+
+// ----------------------------------------------------------------
 
 impl StandardEnvironment {
     #[cfg(not(feature = "tomls"))]
-    pub fn new() -> Self {
-        let env_table = try_load_env_variables();
-        Self::mixed(
-            Some(env_table),
-            Some(Box::<ConfigReaderRegistry>::default()),
-        )
+    pub fn new(table_opt: Option<Table>, registry: Box<dyn ReaderRegistry>) -> Self {
+        let configure = Self::new_opt(table_opt, registry);
+
+        configure
     }
 
     #[cfg(feature = "tomls")]
-    pub fn new() -> Self {
-        let env_table = try_load_env_variables();
-        let mut configure = Self::mixed(
-            Some(env_table),
-            Some(Box::<ConfigReaderRegistry>::default()),
-        );
+    pub fn new(table_opt: Option<Table>, registry: Box<dyn ReaderRegistry>) -> Self {
+        let mut configure = Self::new_opt(table_opt, registry);
         configure.register_toml_reader();
 
         configure
+    }
+
+    fn new_opt(table_opt: Option<Table>, registry: Box<dyn ReaderRegistry>) -> Self {
+        let mut merged_table = Table::new();
+
+        let env_table = try_load_env_variables();
+        merged_table = merge_tables(merged_table, env_table);
+
+        if let Some(table) = table_opt {
+            merged_table = merge_tables(merged_table, table);
+        }
+
+        Self::mixed(Some(merged_table), registry)
     }
 
     // ----------------------------------------------------------------
 
     pub fn table(mut self, table: Table) -> Self {
         self.merge_table(table);
-
-        self
-    }
-
-    pub fn registry(mut self, registry_opt: Option<Box<dyn ReaderRegistry>>) -> Self {
-        if let Some(registry) = registry_opt {
-            self.registry = Some(registry);
-        }
 
         self
     }
@@ -94,7 +101,7 @@ impl StandardEnvironment {
 
     // ---------------------------------------------------------------- private
 
-    fn mixed(table_opt: Option<Table>, registry: Option<Box<dyn ReaderRegistry>>) -> Self {
+    fn mixed(table_opt: Option<Table>, registry: Box<dyn ReaderRegistry>) -> Self {
         if let Some(table) = table_opt {
             return Self {
                 ctx: table,
@@ -110,9 +117,7 @@ impl StandardEnvironment {
 
     #[cfg(feature = "tomls")]
     fn register_toml_reader(&mut self) {
-        if let Some(ref mut registry) = self.registry {
-            registry.register(Box::<TomlConfigReader>::default())
-        }
+        self.registry.register(Box::<TomlConfigReader>::default())
     }
 }
 
@@ -206,33 +211,17 @@ impl Environment for StandardEnvironment {
     }
 
     fn try_acquire(&self, name: &str) -> Option<&dyn ConfigReader> {
-        if let Some(ref registry) = self.registry {
-            registry.try_acquire(name)
-        } else {
-            None
-        }
+        self.registry.try_acquire(name)
     }
 
     fn try_acquires(&self) -> Vec<&dyn ConfigReader> {
-        if let Some(ref registry) = self.registry {
-            return registry.try_acquires();
-        }
-
-        Vec::new()
+        self.registry.try_acquires()
     }
 }
 
 // ----------------------------------------------------------------
 
 impl DynamicEnvironment for StandardEnvironment {}
-
-// ----------------------------------------------------------------
-
-impl Default for StandardEnvironment {
-    fn default() -> Self {
-        Self::new()
-    }
-}
 
 // ----------------------------------------------------------------
 
@@ -254,7 +243,7 @@ pub struct StandardEnvironmentBuilder {
     /// * omiga
     /// * application
     /// * ...
-    configs: Vec<String>,
+    configs: HashSet<String>,
     /// Config file profiles active.
     ///
     /// * dev
@@ -262,7 +251,7 @@ pub struct StandardEnvironmentBuilder {
     /// * stage
     /// * prod
     /// * ...
-    profiles: Vec<String>,
+    profiles: HashSet<String>,
     /// Config file format.
     ///
     /// * toml
@@ -271,25 +260,28 @@ pub struct StandardEnvironmentBuilder {
     /// * properties (Unsupported now)
     /// * ini (Unsupported now)
     /// * ...
-    formats: Vec<String>,
+    formats: HashSet<String>,
     /// Config file search paths.
     /// * .
     /// * ./configs
     /// * ./resources
     /// * ...
-    search_paths: Vec<String>,
+    search_paths: HashSet<String>,
 }
 
 impl StandardEnvironmentBuilder {
     pub fn new() -> Self {
+        let mut default_profiles = HashSet::new();
+        default_profiles.insert(SIGMA_CORE_PROFILE_ACTIVES_DEFAULT.to_string());
+
         Self {
             table: None,
             registry: None,
             paths: HashSet::new(),
-            configs: Vec::new(),
-            profiles: vec![SIGMA_CORE_PROFILE_ACTIVES_DEFAULT.to_string()],
-            formats: Vec::new(),
-            search_paths: Vec::new(),
+            configs: HashSet::new(),
+            profiles: default_profiles,
+            formats: HashSet::new(),
+            search_paths: HashSet::new(),
         }
     }
 
@@ -299,8 +291,45 @@ impl StandardEnvironmentBuilder {
         self
     }
 
+    #[cfg(not(feature = "tomls"))]
     pub fn with_registry(mut self, registry: Box<dyn ReaderRegistry>) -> Self {
         self.registry = Some(registry);
+
+        self
+    }
+
+    #[cfg(feature = "tomls")]
+    pub fn with_registry(mut self, registry: Box<dyn ReaderRegistry>) -> Self {
+        self.registry = Some(registry);
+
+        match self
+            .registry
+            .as_ref()
+            .unwrap()
+            .try_acquire(SIGMA_CONFIG_READER_TOML_FORMAT)
+        {
+            Some(_) => {}
+            None => {
+                self.registry
+                    .as_mut()
+                    .unwrap()
+                    .register(Box::<TomlConfigReader>::default());
+            }
+        }
+
+        self
+    }
+
+    pub fn with_reader(mut self, reader: Box<dyn ConfigReader>) -> Self {
+        match self
+            .registry
+            .as_ref()
+            .unwrap()
+            .try_acquire(reader.as_ref().suffix().as_str())
+        {
+            Some(_) => {}
+            None => self.registry.as_mut().unwrap().register(reader),
+        }
 
         self
     }
@@ -318,7 +347,7 @@ impl StandardEnvironmentBuilder {
     }
 
     pub fn with_config(mut self, config: String) -> Self {
-        self.configs.push(config);
+        self.configs.insert(config);
 
         self
     }
@@ -329,26 +358,38 @@ impl StandardEnvironmentBuilder {
         self
     }
 
-    pub fn with_search_path(mut self, search_path: String) -> Self {
-        self.search_paths.push(search_path);
-
-        self
-    }
-
-    pub fn with_search_paths(mut self, search_paths: Vec<String>) -> Self {
-        self.search_paths.extend(search_paths);
-
-        self
-    }
-
     pub fn with_profile(mut self, profile: String) -> Self {
-        self.profiles.push(profile);
+        self.profiles.insert(profile);
 
         self
     }
 
     pub fn with_profiles(mut self, profiles: Vec<String>) -> Self {
         self.profiles.extend(profiles);
+
+        self
+    }
+
+    pub fn with_format(mut self, format: String) -> Self {
+        self.formats.insert(format);
+
+        self
+    }
+
+    pub fn with_formats(mut self, formats: Vec<String>) -> Self {
+        self.formats.extend(formats);
+
+        self
+    }
+
+    pub fn with_search_path(mut self, search_path: String) -> Self {
+        self.search_paths.insert(search_path);
+
+        self
+    }
+
+    pub fn with_search_paths(mut self, search_paths: Vec<String>) -> Self {
+        self.search_paths.extend(search_paths);
 
         self
     }
@@ -367,14 +408,25 @@ impl StandardEnvironmentBuilder {
     fn try_populate_defaults(&mut self) {
         if self.configs.is_empty() {
             self.configs
-                .push(SIGMA_CORE_CONFIG_FILE_NAME_DEFAULT.to_string());
+                .insert(SIGMA_CORE_CONFIG_FILE_NAME_DEFAULT.to_string());
             self.configs
-                .push(SIGMA_CORE_CONFIG_FILE_NAME_APPLICATION_DEFAULT.to_string());
+                .insert(SIGMA_CORE_CONFIG_FILE_NAME_APPLICATION_DEFAULT.to_string());
         }
 
         if self.formats.is_empty() {
             self.formats
-                .push(SIGMA_CORE_CONFIG_FILE_FORMAT_DEFAULT.to_string());
+                .insert(SIGMA_CORE_CONFIG_FILE_FORMAT_DEFAULT.to_string());
+        }
+
+        match self.registry {
+            Some(_) => {}
+            None => {
+                // By default.
+                let mut registry = ConfigReaderRegistry::default();
+                registry.register(Box::<TomlConfigReader>::default());
+
+                self.registry = Some(Box::new(registry));
+            }
         }
     }
 
@@ -433,28 +485,98 @@ impl StandardEnvironmentBuilder {
                 };
                 match fs::canonicalize(&absolute_path) {
                     Ok(clean_path) => clean_path.to_string_lossy().to_string(),
-                    Err(_) => absolute_path.to_string_lossy().to_string(),
+                    Err(err) => {
+                        if err.kind() != ErrorKind::NotFound {
+                            // log.warn
+                            return ErrorKind::NotFound.to_string();
+                        }
+
+                        // log.error
+                        ErrorKind::InvalidInput.to_string()
+                    }
                 }
+            })
+            .filter(|x| {
+                !(x == &ErrorKind::NotFound.to_string()
+                    || x == &ErrorKind::InvalidInput.to_string())
             })
             .collect();
     }
 
     // ----------------------------------------------------------------
 
-    fn on_build(&mut self) -> Result<StandardEnvironment, FileError> {
-        panic!("Unsupported now")
+    fn take_registry(&mut self) -> Option<Box<dyn ReaderRegistry>> {
+        self.registry.take()
     }
 
     // ----------------------------------------------------------------
 
-    #[allow(dead_code)]
-    fn try_read_config_profile_file(
-        _file_path: &Path,
-        _format: &Cow<str>,
-        _reader: &dyn ConfigReader,
-        _profile: String,
+    fn on_build(&mut self) -> Result<StandardEnvironment, FileError> {
+        let mut merged_table = Table::new();
+        for path in self.paths.iter() {
+            // e.g.: /opt/app/configs/omiga.toml
+            let config_file_path = Path::new(&path);
+            if let Some(extension) = config_file_path
+                .to_str()
+                .and_then(|name| Path::new(name).extension())
+            {
+                let format = extension.to_string_lossy();
+
+                if let Some(reader) = self.registry.as_ref().unwrap().try_acquire(format.as_ref()) {
+                    match self.try_read_config_file(config_file_path, reader) {
+                        Ok(table_ok) => {
+                            merged_table = merge_tables(merged_table, table_ok);
+                        }
+                        Err(failed) => {
+                            return Err(failed);
+                        }
+                    }
+                } else {
+                    // /opt/app/configs/omiga.${UnknownSuffix}
+                    return Err(FileError::ReaderNotFound(format.as_ref().to_string()));
+                }
+            } else {
+                // /opt/app/configs/omiga
+                return Err(FileError::InvalidPath(format!(
+                    "{}",
+                    config_file_path.to_string_lossy()
+                )));
+            }
+        }
+
+        if let Some(registry) = self.take_registry() {
+            return Ok(StandardEnvironment::new(Some(merged_table), registry));
+        }
+
+        Ok(StandardEnvironment::new(
+            Some(merged_table),
+            Box::new(ConfigReaderRegistry::default()),
+        ))
+    }
+
+    // ----------------------------------------------------------------
+
+    fn try_read_config_file(
+        &self,
+        file_path: &Path,
+        reader: &dyn ConfigReader,
     ) -> Result<Table, FileError> {
-        panic!("Unsupported now")
+        match reader.read_from_path(file_path.to_str().unwrap()) {
+            Ok(table_ok) => {
+                return Ok(table_ok);
+            }
+            Err(failed) => {
+                match failed {
+                    FileError::FileNotFound(_) => {
+                        // log.warn
+                        Ok(Table::new())
+                    }
+                    _ => {
+                        return Err(failed);
+                    }
+                }
+            }
+        }
     }
 }
 

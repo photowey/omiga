@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
-// core
+// hashset
 
-// ------------------------------------------------------------
+// ----------------------------------------------------------------
 
-pub mod converter;
-pub mod error;
-pub mod merger;
+use std::collections::HashSet;
+
+// ----------------------------------------------------------------
+
+pub fn hashset_join(set: &HashSet<String>, delimiter: &str) -> String {
+    let mut vec: Vec<String> = set.iter().cloned().collect();
+    vec.sort();
+    vec.join(delimiter)
+}

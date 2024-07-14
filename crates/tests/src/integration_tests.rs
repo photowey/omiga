@@ -51,7 +51,7 @@ fn test_app_profile_dynamic() {
         .build();
 
     let profiles = app.profiles_active();
-    assert_eq!("override,dev,dynamic", profiles);
+    assert_eq!("dev,dynamic,override", profiles);
 
     let ok = app.is_default_profile();
     assert!(!ok);
@@ -90,7 +90,7 @@ fn test_app_configs() {
         .build();
 
     let configs = app.configs();
-    assert_eq!("omiga.toml,omiga-dev.toml,omiga-dynamic.toml", configs);
+    assert_eq!("omiga-dev.toml,omiga-dynamic.toml,omiga.toml", configs);
 
     app.run()
 }

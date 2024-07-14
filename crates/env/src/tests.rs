@@ -22,9 +22,15 @@ use std::f32::consts::PI;
 use std::path::Path;
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use crate::core::domain::{Table, Value};
-use crate::core::table::merge_tables;
+use omigacore::collection::table::{Table, Value};
+
+use crate::core::merger::merge_tables;
 use crate::env;
+
+// ----------------------------------------------------------------
+
+#[cfg(test)]
+mod env_tests;
 
 // ----------------------------------------------------------------
 
@@ -73,7 +79,7 @@ fn test_table_merge_tables() {
     );
 
     // 3
-    let seed = current_time_millis();
+    let seed = now_millis();
     table_b.insert("replaced".to_string(), Value::IntU128(seed));
 
     // 4: merge
@@ -204,7 +210,7 @@ fn test_is_not_default_profile_active() {
 
 // ----------------------------------------------------------------
 
-fn current_time_millis() -> u128 {
+fn now_millis() -> u128 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .expect("SystemTime before UNIX EPOCH!")

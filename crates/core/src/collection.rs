@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-// core
+// collection
 
-// ------------------------------------------------------------
+// ----------------------------------------------------------------
 
-pub mod converter;
-pub mod error;
-pub mod merger;
+pub mod hashset;
+pub mod table;

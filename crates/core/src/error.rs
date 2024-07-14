@@ -21,6 +21,8 @@
 use std::error::Error;
 use std::fmt;
 
+// ----------------------------------------------------------------
+
 #[allow(dead_code)] // tmp
 #[derive(Debug, PartialEq)]
 pub enum OmigaError {

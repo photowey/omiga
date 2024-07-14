@@ -51,6 +51,7 @@ impl Error for ConfigError {}
 
 #[derive(Debug, PartialEq)]
 pub enum FileError {
+    FileNotFound(String),
     InvalidPath(String),
     InvalidFile(String),
     ReaderNotFound(String),
@@ -62,6 +63,7 @@ pub enum FileError {
 impl fmt::Display for FileError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
+            FileError::FileNotFound(path) => write!(f, "Omiga: file not found, :[{}]", path),
             FileError::InvalidPath(path) => write!(f, "Omiga: invalid path:[{}]", path),
             FileError::InvalidFile(file) => write!(f, "Omiga: invalid config file type:[{}]", file),
             FileError::ReaderNotFound(suffix) => {

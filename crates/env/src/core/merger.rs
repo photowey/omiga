@@ -20,7 +20,7 @@
 
 use std::mem;
 
-use crate::core::domain::{Table, Value};
+use omigacore::collection::table::{Table, Value};
 
 // ----------------------------------------------------------------
 
