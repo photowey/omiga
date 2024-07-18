@@ -32,7 +32,7 @@ use omigacore::constants::{
 
 use crate::core::error::FileError;
 use crate::core::{error::ConfigError, merger::merge_tables};
-use crate::env::{is_default_profile, try_load_env_variables, DynamicEnvironment, Environment};
+use crate::env::{is_default_profile, DynamicEnvironment, Environment};
 use crate::reader::{
     registry::{ConfigReaderRegistry, ReaderRegistry},
     toml::TomlConfigReader,
@@ -75,7 +75,8 @@ impl StandardEnvironment {
     fn new_opt(table_opt: Option<Table>, registry: Box<dyn ReaderRegistry>) -> Self {
         let mut merged_table = Table::new();
 
-        let env_table = try_load_env_variables();
+        //let env_table = try_load_env_variables();
+        let env_table = Table::new();
         merged_table = merge_tables(merged_table, env_table);
 
         if let Some(table) = table_opt {

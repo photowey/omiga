@@ -33,7 +33,7 @@ pub trait ReaderRegistry {
 // ------------------------------------------------------------
 
 pub struct ConfigReaderRegistry {
-    readers: HashMap</*suffix*/ String, Box<dyn ConfigReader>>,
+    readers: HashMap</*format|suffix*/ String, Box<dyn ConfigReader>>,
 }
 
 // ----------------------------------------------------------------
@@ -66,9 +66,6 @@ impl ReaderRegistry for ConfigReaderRegistry {
     }
 
     fn try_acquires(&self) -> Vec<&dyn ConfigReader> {
-        self.readers
-            .values()
-            .map(|r| r.as_ref() as &dyn ConfigReader)
-            .collect()
+        self.readers.values().map(|r| r.as_ref()).collect()
     }
 }
