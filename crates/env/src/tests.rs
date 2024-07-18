@@ -30,7 +30,11 @@ use crate::env;
 // ----------------------------------------------------------------
 
 #[cfg(test)]
-mod env_tests;
+#[cfg(unix)]
+mod env_unix_tests;
+#[cfg(test)]
+#[cfg(windows)]
+mod env_windows_test;
 
 // ----------------------------------------------------------------
 
