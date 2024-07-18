@@ -20,20 +20,36 @@
 
 // ----------------------------------------------------------------
 
-#[rustfmt::skip]
-use imports::*;
+use omigacore::collection::table::{Table, Value};
 
-#[rustfmt::skip]
-mod imports {
-    pub use omigacore::collection::table::{Table, Value};
-
-    pub use crate::env::Environment;
-    pub use crate::env::standard::StandardEnvironment;
-    pub use crate::reader::registry::ConfigReaderRegistry;
-    pub use crate::reader::toml::TomlConfigReader;
-}
+use crate::env::standard::StandardEnvironment;
+use crate::env::Environment;
+use crate::reader::registry::ConfigReaderRegistry;
+use crate::reader::toml::TomlConfigReader;
 
 // ----------------------------------------------------------------
+
+#[test]
+fn test_hold_on_imports() {
+    let rvt = StandardEnvironment::builder()
+        .with_table(Table::new())
+        .with_registry(Box::new(ConfigReaderRegistry::default()))
+        .with_reader(Box::new(TomlConfigReader::default()))
+        .with_config("omiga".to_string())
+        .with_profile("dev".to_string())
+        .with_format("toml".to_string())
+        .build();
+
+    let mut environment = rvt.unwrap();
+    environment
+        .set("io.github.photowey", Value::String("omiga".to_string()))
+        .expect("Set failed");
+
+    assert_eq!(
+        environment.get("io.github.photowey"),
+        Ok(&Value::String("omiga".to_string()))
+    );
+}
 
 #[test]
 #[cfg(windows)]
