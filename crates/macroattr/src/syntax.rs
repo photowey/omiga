@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-// macroattr
+// syntax
 
 // ----------------------------------------------------------------
-mod syntax;
+
+pub(crate) mod parser;
