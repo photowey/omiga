@@ -5,3 +5,5 @@ edition = "2021"
 license = "Apache-2.0"
 
 [dependencies]
+omigabean = { version = "0.1", path = "../bean" }
+dashmap = { workspace = true }

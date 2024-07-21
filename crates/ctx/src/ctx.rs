@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-// omigacore
+// ctx
 
 // ----------------------------------------------------------------
 
-pub mod clock;
-pub mod collection;
-pub mod constants;
-pub mod error;
-pub mod helper;
-pub mod model;
+use omigabean::factory::BeanFactory;
+
+pub mod standard;
 
 // ----------------------------------------------------------------
 
-#[cfg(test)]
-mod tests;
+pub trait ApplicationContext: BeanFactory {}

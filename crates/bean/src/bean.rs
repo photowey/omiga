@@ -14,18 +14,13 @@
  * limitations under the License.
  */
 
-// omigacore
+// bean
 
 // ----------------------------------------------------------------
 
-pub mod clock;
-pub mod collection;
-pub mod constants;
-pub mod error;
-pub mod helper;
-pub mod model;
+use std::any::Any;
 
 // ----------------------------------------------------------------
 
-#[cfg(test)]
-mod tests;
+pub type Bean = (dyn Any + Send + Sync);
+pub type Boolean = bool;

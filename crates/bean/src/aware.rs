@@ -14,18 +14,8 @@
  * limitations under the License.
  */
 
-// omigacore
+// aware
 
 // ----------------------------------------------------------------
 
-pub mod clock;
-pub mod collection;
-pub mod constants;
-pub mod error;
-pub mod helper;
-pub mod model;
-
-// ----------------------------------------------------------------
-
-#[cfg(test)]
-mod tests;
+pub trait Aware {}

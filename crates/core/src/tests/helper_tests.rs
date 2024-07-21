@@ -14,18 +14,6 @@
  * limitations under the License.
  */
 
-// omigacore
+// tests/helper_tests
 
 // ----------------------------------------------------------------
-
-pub mod clock;
-pub mod collection;
-pub mod constants;
-pub mod error;
-pub mod helper;
-pub mod model;
-
-// ----------------------------------------------------------------
-
-#[cfg(test)]
-mod tests;

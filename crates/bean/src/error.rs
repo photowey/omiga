@@ -24,32 +24,30 @@ use std::fmt;
 // ----------------------------------------------------------------
 
 #[derive(Debug, PartialEq)]
-pub enum OmigaError {
-    Runtime(String),
-    IO(String),
-    Database(String),
-    Business(String),
-    Unknown(String),
+pub enum BeanError {
+    CircularDependency(String),
+    NotFound(String),
+    CastFailed(String),
 }
 
-impl fmt::Display for OmigaError {
+impl fmt::Display for BeanError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            OmigaError::Runtime(message) => {
-                write!(f, "Omiga: runtime error, message:[{}]", message)
+            BeanError::CircularDependency(message) => {
+                write!(f, "Omiga: circular dependency error, message:[{}]", message)
             }
-            OmigaError::IO(message) => write!(f, "Omiga: I/O error, message:[{}]", message),
-            OmigaError::Database(message) => {
-                write!(f, "Omiga: database error, message:[{}]", message)
+            BeanError::NotFound(message) => {
+                write!(f, "Omiga: bean not found error, message:[{}]", message)
             }
-            OmigaError::Business(message) => {
-                write!(f, "Omiga: business error, message:[{}]", message)
-            }
-            OmigaError::Unknown(message) => {
-                write!(f, "Omiga: unknown error, message:[{}]", message)
+            BeanError::CastFailed(message) => {
+                write!(
+                    f,
+                    "Omiga: component cast to `Bean` error, message:[{}]",
+                    message
+                )
             }
         }
     }
 }
 
-impl Error for OmigaError {}
+impl Error for BeanError {}

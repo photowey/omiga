@@ -14,18 +14,37 @@
  * limitations under the License.
  */
 
-// omigacore
+// tests
 
 // ----------------------------------------------------------------
 
-pub mod clock;
-pub mod collection;
-pub mod constants;
-pub mod error;
-pub mod helper;
-pub mod model;
+use omigabean::factory::BeanFactory;
+
+use crate::ctx::standard::StandardApplicationContext;
 
 // ----------------------------------------------------------------
 
-#[cfg(test)]
-mod tests;
+#[derive(Debug, Clone)]
+struct HelloService {
+    value: i32,
+}
+
+impl HelloService {
+    pub fn new(value: i32) -> Self {
+        Self { value }
+    }
+
+    pub fn say_hello(&self) -> i32 {
+        self.value
+    }
+}
+
+// ----------------------------------------------------------------
+
+#[test]
+fn test_ctx() {
+    let ctx = StandardApplicationContext::new();
+    ctx.register("hello_service", HelloService::new(10086));
+    let hello_service = ctx.get::<HelloService>("hello_service").unwrap();
+    assert_eq!(10086, hello_service.say_hello());
+}

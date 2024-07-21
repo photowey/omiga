@@ -27,6 +27,9 @@ use crate::clock::timestamp::now;
 use crate::collection::merger::merge_tables;
 use crate::collection::table::{Table, Value};
 
+#[cfg(test)]
+mod helper_tests;
+
 // ----------------------------------------------------------------
 
 #[test]

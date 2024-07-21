@@ -14,18 +14,23 @@
  * limitations under the License.
  */
 
-// omigacore
+// factory
 
 // ----------------------------------------------------------------
 
-pub mod clock;
-pub mod collection;
-pub mod constants;
-pub mod error;
-pub mod helper;
-pub mod model;
+use std::any::Any;
+use std::sync::Arc;
+
+use crate::aware::Aware;
+use crate::error::BeanError;
 
 // ----------------------------------------------------------------
 
-#[cfg(test)]
-mod tests;
+pub trait BeanFactory {
+    fn register<T: 'static + Any + Send + Sync + Clone>(&self, name: &str, component: T);
+    fn get<T: 'static + Any + Send + Sync + Clone>(&self, name: &str) -> Result<Arc<T>, BeanError>;
+}
+
+// ----------------------------------------------------------------
+
+pub trait BeanFactoryAware: Aware {}

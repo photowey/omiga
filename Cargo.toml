@@ -10,6 +10,7 @@ members = [
     "crates/core",
     "crates/ctx",
     "crates/env",
+    "crates/factory",
     "crates/macroattr",
     "crates/macrofn",
     "crates/omiga",
@@ -27,7 +28,8 @@ quote = "1.0"
 proc-macro2 = "1.0"
 # ----------------------------------------------------------------
 chrono = "0.4"
+chronounit = "0.3"
 toml = { version = "0.8" }
 serde = { version = "1.0", features = ["derive"] }
 clap = { version = "4.0", features = ["derive"] }
-chronounit = "0.3"
+dashmap = "6.0"

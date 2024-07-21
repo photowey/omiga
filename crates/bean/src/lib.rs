@@ -17,3 +17,8 @@
 // omigabean
 
 // ----------------------------------------------------------------
+
+pub mod aware;
+pub mod bean;
+pub mod error;
+pub mod factory;
