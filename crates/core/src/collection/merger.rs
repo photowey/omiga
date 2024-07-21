@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-// core/table
+// collection/merger
 
 // ----------------------------------------------------------------
 
 use std::mem;
 
-use omigacore::collection::table::{Table, Value};
+use crate::collection::table::{Table, Value};
 
 // ----------------------------------------------------------------
 

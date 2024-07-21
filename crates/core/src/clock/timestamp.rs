@@ -14,16 +14,35 @@
  * limitations under the License.
  */
 
-// omigacore
+// clock/timestamp
 
 // ----------------------------------------------------------------
 
-pub mod clock;
-pub mod collection;
-pub mod constants;
-pub mod model;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 // ----------------------------------------------------------------
 
-#[cfg(test)]
-mod tests;
+pub fn now() -> u128 {
+    now_millis()
+}
+
+pub fn now_seconds() -> u64 {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("SystemTime before UNIX EPOCH!")
+        .as_secs()
+}
+
+pub fn now_millis() -> u128 {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("SystemTime before UNIX EPOCH!")
+        .as_millis()
+}
+
+pub fn now_nanos() -> u128 {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("SystemTime before UNIX EPOCH!")
+        .as_nanos()
+}

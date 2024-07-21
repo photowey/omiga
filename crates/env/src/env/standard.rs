@@ -23,6 +23,7 @@ use std::io::ErrorKind;
 use std::path::{Path, PathBuf, MAIN_SEPARATOR};
 use std::{env, fs};
 
+use omigacore::collection::merger::merge_tables;
 use omigacore::collection::table::{Table, Value};
 use omigacore::constants::{
     DOT, SIGMA_CONFIG_READER_TOML_FORMAT, SIGMA_CORE_CONFIG_FILE_FORMAT_DEFAULT,
@@ -30,8 +31,8 @@ use omigacore::constants::{
     SIGMA_CORE_PROFILE_ACTIVES_DEFAULT,
 };
 
+use crate::core::error::ConfigError;
 use crate::core::error::FileError;
-use crate::core::{error::ConfigError, merger::merge_tables};
 use crate::env::{is_default_profile, DynamicEnvironment, Environment};
 use crate::reader::{
     registry::{ConfigReaderRegistry, ReaderRegistry},

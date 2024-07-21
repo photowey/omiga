@@ -14,16 +14,9 @@
  * limitations under the License.
  */
 
-// omigacore
+// clock
 
 // ----------------------------------------------------------------
 
-pub mod clock;
-pub mod collection;
-pub mod constants;
-pub mod model;
-
-// ----------------------------------------------------------------
-
-#[cfg(test)]
-mod tests;
+pub mod datetime;
+pub mod timestamp;
