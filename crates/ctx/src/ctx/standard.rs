@@ -51,12 +51,45 @@ impl StandardApplicationContext {
 
 // ----------------------------------------------------------------
 
-impl ApplicationContext for StandardApplicationContext {}
+impl ApplicationContext for StandardApplicationContext {
+    fn register_initializing(&self, name: &str) -> Option<Boolean> {
+        self.initializing.insert(name.to_string(), true)
+    }
+
+    fn register_initialized(&self, name: &str) -> Option<Boolean> {
+        if self.initializing.contains_key(name) {
+            self.initializing.remove(name);
+            return Some(true);
+        }
+
+        None
+    }
+
+    fn predicate_initializing(&self, name: &str) -> Option<Boolean> {
+        if self.initializing.contains_key(name) {
+            return Some(true);
+        }
+
+        None
+    }
+
+    fn predicate_initialized(&self, name: &str) -> Option<Boolean> {
+        if self.ctx.contains_key(name) {
+            return Some(true);
+        }
+
+        None
+    }
+}
+
+// ----------------------------------------------------------------
 
 impl BeanFactory for StandardApplicationContext {
     fn register<T: 'static + Any + Send + Sync + Clone>(&self, name: &str, bean: T) {
         self.ctx
             .insert(name.to_string(), Arc::new(Mutex::new(bean)));
+        // register initialized
+        self.register_initialized(name);
     }
 
     fn get<T: 'static + Any + Send + Sync + Clone>(&self, name: &str) -> Result<Arc<T>, BeanError> {

@@ -21,6 +21,7 @@
 use omigabean::factory::BeanFactory;
 
 use crate::ctx::standard::StandardApplicationContext;
+use crate::ctx::ApplicationContext;
 
 // ----------------------------------------------------------------
 
@@ -42,9 +43,94 @@ impl HelloService {
 // ----------------------------------------------------------------
 
 #[test]
-fn test_ctx() {
+fn test_ctx_register() {
+    let ctx = StandardApplicationContext::new();
+    ctx.register("hello_service", HelloService::new(10086));
+}
+
+#[test]
+fn test_ctx_get() {
     let ctx = StandardApplicationContext::new();
     ctx.register("hello_service", HelloService::new(10086));
     let hello_service = ctx.get::<HelloService>("hello_service").unwrap();
     assert_eq!(10086, hello_service.say_hello());
+}
+
+// ----------------------------------------------------------------
+
+#[test]
+fn test_ctx_register_initializing() {
+    let ctx = StandardApplicationContext::new();
+
+    let rvt = ctx.register_initializing("hello_service");
+    assert!(rvt.is_none());
+
+    let rvt_1 = ctx.predicate_initializing("hello_service");
+    assert!(rvt_1.is_some());
+}
+
+#[test]
+fn test_ctx_register_initialized() {
+    let ctx = StandardApplicationContext::new();
+
+    let rvt = ctx.register_initializing("hello_service");
+    assert!(rvt.is_none());
+
+    let rvt2 = ctx.register_initialized("hello_service");
+    assert!(rvt2.is_some());
+
+    let rvt_1 = ctx.predicate_initializing("hello_service");
+    assert!(rvt_1.is_none());
+}
+
+#[test]
+fn test_ctx_predicate_initializing() {
+    let ctx = StandardApplicationContext::new();
+
+    let rvt_1 = ctx.register_initializing("hello_service");
+    assert!(rvt_1.is_none());
+
+    let rvt_1_1 = ctx.predicate_initializing("hello_service");
+    assert!(rvt_1_1.is_some());
+
+    let rvt_2 = ctx.register_initialized("hello_service");
+    assert!(rvt_2.is_some());
+
+    let rvt_2_1 = ctx.predicate_initializing("hello_service");
+    assert!(rvt_2_1.is_none());
+}
+
+#[test]
+fn test_ctx_register_bean_with_initialized() {
+    let ctx = StandardApplicationContext::new();
+
+    let rvt_1 = ctx.register_initializing("hello_service");
+    assert!(rvt_1.is_none());
+
+    let rvt_1_1 = ctx.predicate_initializing("hello_service");
+    assert!(rvt_1_1.is_some());
+
+    ctx.register("hello_service", HelloService::new(10086));
+
+    let rvt_2 = ctx.predicate_initializing("hello_service");
+    assert!(rvt_2.is_none());
+}
+
+#[test]
+fn test_ctx_predicate_initialized() {
+    let ctx = StandardApplicationContext::new();
+
+    let rvt_1 = ctx.register_initializing("hello_service");
+    assert!(rvt_1.is_none());
+
+    let rvt_1_1 = ctx.predicate_initializing("hello_service");
+    assert!(rvt_1_1.is_some());
+
+    ctx.register("hello_service", HelloService::new(10086));
+
+    let rvt_2 = ctx.predicate_initializing("hello_service");
+    assert!(rvt_2.is_none());
+
+    let rvt_3 = ctx.predicate_initialized("hello_service");
+    assert!(rvt_3.is_some());
 }

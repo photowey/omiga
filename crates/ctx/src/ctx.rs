@@ -18,10 +18,16 @@
 
 // ----------------------------------------------------------------
 
+use omigabean::bean::Boolean;
 use omigabean::factory::BeanFactory;
 
 pub mod standard;
 
 // ----------------------------------------------------------------
 
-pub trait ApplicationContext: BeanFactory {}
+pub trait ApplicationContext: BeanFactory {
+    fn register_initializing(&self, name: &str) -> Option<Boolean>;
+    fn register_initialized(&self, name: &str) -> Option<Boolean>;
+    fn predicate_initializing(&self, name: &str) -> Option<Boolean>;
+    fn predicate_initialized(&self, name: &str) -> Option<Boolean>;
+}
