@@ -20,6 +20,8 @@
 
 // ----------------------------------------------------------------
 
+use std::path::Path;
+
 use omigacore::collection::table::{Table, Value};
 
 use crate::env::standard::StandardEnvironment;
@@ -49,6 +51,9 @@ fn test_hold_on_imports() {
         environment.get("io.github.photowey"),
         Ok(&Value::String("omiga".to_string()))
     );
+
+    let file_path_relative = Path::new("omiga.toml");
+    assert!(file_path_relative.is_relative());
 }
 
 #[test]
@@ -99,4 +104,45 @@ fn test_standard_environment_os_windows() {
         environment.get("io.github.photowey"),
         Ok(&Value::String("omiga".to_string()))
     );
+}
+
+// ----------------------------------------------------------------
+
+#[test]
+#[cfg(windows)]
+fn test_file_os_windows() {
+    let path = "C:\\rust\\dev\\configs\\omiga.toml";
+    let file_path = Path::new(&path);
+    let parent_path = file_path.parent().unwrap();
+
+    assert_eq!("C:\\rust\\dev\\configs", parent_path.to_str().unwrap());
+    assert_eq!("omiga.toml", file_path.file_name().unwrap());
+    assert_eq!("omiga.toml", file_path.file_name().unwrap());
+}
+
+// ----------------------------------------------------------------
+
+#[test]
+#[cfg(windows)]
+fn test_file_path_os_windows() {
+    let path = "C:\\rust\\dev\\configs\\omiga";
+    let file_path = Path::new(&path);
+    let parent_path = file_path.parent().unwrap();
+    let file_stem = file_path.file_stem().unwrap();
+
+    assert_eq!("C:\\rust\\dev\\configs", parent_path.to_str().unwrap());
+    assert_eq!("omiga", file_stem.to_str().unwrap());
+    assert_eq!("omiga", file_stem.to_string_lossy())
+}
+
+// ----------------------------------------------------------------
+
+#[test]
+#[cfg(windows)]
+fn test_path_os_windows() {
+    let file_path_absolute = Path::new("C:\\rust\\dev\\configs\\omiga.toml");
+    let file_path_relative = Path::new("omiga.toml");
+
+    assert!(file_path_absolute.is_absolute());
+    assert!(file_path_relative.is_relative());
 }
