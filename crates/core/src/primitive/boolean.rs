@@ -33,11 +33,15 @@ pub enum Boolean {
 // ----------------------------------------------------------------
 
 impl Boolean {
-    pub fn to_string(&self) -> String {
+    pub fn to_str(&self) -> &str {
         match self {
-            Boolean::True => ONE.to_string(),
-            Boolean::False => ZERO.to_string(),
+            Boolean::True => ONE,
+            Boolean::False => ZERO,
         }
+    }
+
+    pub fn to_string(&self) -> String {
+        self.to_str().to_string()
     }
 
     pub fn to_int(&self) -> u8 {
