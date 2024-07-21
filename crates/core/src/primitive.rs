@@ -14,19 +14,8 @@
  * limitations under the License.
  */
 
-// omigacore
+// primitive
 
 // ----------------------------------------------------------------
 
-pub mod clock;
-pub mod collection;
-pub mod constants;
-pub mod error;
-pub mod helper;
-pub mod model;
-
-// ----------------------------------------------------------------
-
-mod primitive;
-#[cfg(test)]
-mod tests;
+pub mod boolean;

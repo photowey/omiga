@@ -44,3 +44,16 @@ pub const COMMA: &str = ",";
 
 /// 9320: A dream moment for Manchester City's forward `Agüero`.
 pub const SIGMA_WEB_SERVER_PORT_DEFAULT: u32 = 9320;
+
+// ----------------------------------------------------------------
+
+pub const ONE_INT: u8 = 1;
+pub const ZERO_INT: u8 = 0;
+
+pub const ONE: &str = "1";
+pub const ZERO: &str = "0";
+
+pub const TRUE: &str = "true";
+pub const FALSE: &str = "false";
+
+// ----------------------------------------------------------------

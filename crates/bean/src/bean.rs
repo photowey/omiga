@@ -24,29 +24,3 @@ use std::any::Any;
 
 pub type Bean = (dyn Any + Send + Sync);
 pub type Boolean = bool;
-
-// ----------------------------------------------------------------
-
-pub enum Booleans {
-    TRUE(Boolean),
-    FALSE(Boolean),
-}
-
-// ----------------------------------------------------------------
-
-impl Booleans {
-    pub fn value(&self) -> Boolean {
-        match self {
-            Booleans::TRUE(value) => *value,
-            Booleans::FALSE(value) => *value,
-        }
-    }
-
-    pub fn value_of(&self, value: Boolean) -> Booleans {
-        if value {
-            return Booleans::TRUE(value);
-        }
-
-        return Booleans::FALSE(value);
-    }
-}

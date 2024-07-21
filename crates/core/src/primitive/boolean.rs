@@ -14,19 +14,43 @@
  * limitations under the License.
  */
 
-// omigacore
+#![allow(dead_code)]
+
+// boolean
 
 // ----------------------------------------------------------------
 
-pub mod clock;
-pub mod collection;
-pub mod constants;
-pub mod error;
-pub mod helper;
-pub mod model;
+use crate::constants::{ONE, ONE_INT, ZERO, ZERO_INT};
 
 // ----------------------------------------------------------------
 
-mod primitive;
-#[cfg(test)]
-mod tests;
+#[derive(Debug)]
+pub enum Boolean {
+    True,
+    False,
+}
+
+// ----------------------------------------------------------------
+
+impl Boolean {
+    pub fn to_string(&self) -> String {
+        match self {
+            Boolean::True => ONE.to_string(),
+            Boolean::False => ZERO.to_string(),
+        }
+    }
+
+    pub fn to_int(&self) -> u8 {
+        match self {
+            Boolean::True => ONE_INT,
+            Boolean::False => ZERO_INT,
+        }
+    }
+
+    pub fn to_bool(&self) -> bool {
+        match self {
+            Boolean::True => true,
+            Boolean::False => false,
+        }
+    }
+}
