@@ -1,8 +1,10 @@
 [package]
-name = "omigaapp"
+name = "omiga_app"
 version = "0.1.0"
 edition = "2021"
+
+authors = ["photowey <photowey@gmail.com>"]
 license = "Apache-2.0"
 
 [dependencies]
-omigacore = { path = "../core" }
+omiga_core = { path = "../core" }

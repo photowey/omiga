@@ -21,7 +21,7 @@
 use std::fs;
 use std::io::ErrorKind;
 
-use omigacore::collection::table::Table;
+use omiga_core::collection::table::Table;
 
 use crate::core::error::FileError;
 

@@ -25,9 +25,9 @@ use std::sync::{Arc, Mutex};
 
 use dashmap::DashMap;
 
-use omigabean::bean::{Bean, Boolean};
-use omigabean::error::BeanError;
-use omigabean::factory::BeanFactory;
+use omiga_bean::bean::{Bean, Boolean};
+use omiga_bean::error::BeanError;
+use omiga_bean::factory::BeanFactory;
 
 use crate::ctx::ApplicationContext;
 

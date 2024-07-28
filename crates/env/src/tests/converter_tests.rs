@@ -23,8 +23,8 @@ use std::f32::consts::PI;
 use chrono::NaiveDateTime;
 use chronounit::formatter::pattern::DateTimePattern;
 
-use omigacore::clock::timestamp;
-use omigacore::collection::table::{Array, Table, Value};
+use omiga_core::clock::timestamp;
+use omiga_core::collection::table::{Array, Table, Value};
 
 use crate::core::converter::ValueConverter;
 use crate::core::error::FileError;

@@ -1,7 +1,9 @@
 [package]
-name = "macroattr"
+name = "macro_attr"
 version = "0.1.0"
 edition = "2021"
+
+authors = ["photowey <photowey@gmail.com>"]
 license = "Apache-2.0"
 
 [dependencies]
@@ -9,6 +11,7 @@ license = "Apache-2.0"
 syn = { workspace = true }
 quote = { workspace = true }
 proc-macro2 = { workspace = true }
+synext = { workspace = true }
 # ------------------------------------------------
 
 [lib]

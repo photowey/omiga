@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-// omigaapp/app
+// omiga_app/app
 
 // ----------------------------------------------------------------
 
 use std::collections::HashSet;
 
-use omigacore::collection::hashset::hashset_join;
-use omigacore::constants::{COMMA, SIGMA_CORE_PROFILE_ACTIVES_DEFAULT};
-use omigacore::model::kv::Kv;
+use omiga_core::collection::hashset::hashset_join;
+use omiga_core::constants::{COMMA, SIGMA_CORE_PROFILE_ACTIVES_DEFAULT};
+use omiga_core::model::kv::Kv;
 
 // ----------------------------------------------------------------
 

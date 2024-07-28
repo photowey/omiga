@@ -18,7 +18,7 @@
 
 // ----------------------------------------------------------------
 
-use omigabean::factory::BeanFactory;
+use omiga_bean::factory::BeanFactory;
 
 use crate::ctx::standard::StandardApplicationContext;
 use crate::ctx::ApplicationContext;

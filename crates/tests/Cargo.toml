@@ -1,5 +1,5 @@
 [package]
-name = "sigmatests"
+name = "sigma_tests"
 version = "0.1.0"
 edition = "2021"
 license = "Apache-2.0"
@@ -7,12 +7,12 @@ license = "Apache-2.0"
 publish = false
 
 [dependencies]
-omigaapp = { path = "../app" }
-omigabean = { path = "../bean" }
-omigacore = { path = "../core" }
-omigactx = { path = "../ctx" }
-omigaenv = { path = "../env" }
-macroattr = { path = "../macroattr" }
-macrofn = { path = "../macrofn" }
-omigatesting = { path = "../testing" }
-omigaweb = { path = "../web" }
+omiga_app = { path = "../app" }
+omiga_bean = { path = "../bean" }
+omiga_core = { path = "../core" }
+omiga_ctx = { path = "../ctx" }
+omiga_env = { path = "../env" }
+macro_attr = { path = "../macroattr" }
+macro_fn = { path = "../macrofn" }
+omiga_testing = { path = "../testing" }
+omiga_web = { path = "../web" }

@@ -20,8 +20,8 @@
 
 use std::env;
 
-use omigacore::collection::table::{Table, Value};
-use omigacore::constants::SIGMA_CORE_PROFILE_ACTIVES_DEFAULT;
+use omiga_core::collection::table::{Table, Value};
+use omiga_core::constants::SIGMA_CORE_PROFILE_ACTIVES_DEFAULT;
 
 use crate::core::error::ConfigError;
 use crate::reader::ConfigReader;

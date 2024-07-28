@@ -20,7 +20,7 @@
 
 use chrono::NaiveDateTime;
 
-use omigacore::collection::table::{Array, Table, Value};
+use omiga_core::collection::table::{Array, Table, Value};
 
 use crate::core::error::ConfigError;
 

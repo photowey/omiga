@@ -1,9 +1,11 @@
 [package]
-name = "omigactx"
+name = "omiga_ctx"
 version = "0.1.0"
 edition = "2021"
+
+authors = ["photowey <photowey@gmail.com>"]
 license = "Apache-2.0"
 
 [dependencies]
-omigabean = { version = "0.1", path = "../bean" }
+omiga_bean = { version = "0.1", path = "../bean" }
 dashmap = { workspace = true }

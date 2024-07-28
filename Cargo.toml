@@ -33,3 +33,4 @@ toml = { version = "0.8" }
 serde = { version = "1.0", features = ["derive"] }
 clap = { version = "4.0", features = ["derive"] }
 dashmap = "6.0"
+synext = "0.3"

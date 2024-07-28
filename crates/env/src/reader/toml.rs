@@ -23,8 +23,8 @@ use toml::de::Error;
 use toml::value::{Date, Datetime, Time};
 use toml::Value;
 
-use omigacore::collection::table::{OmigaTable, OmigaValue};
-use omigacore::constants::{SIGMA_CONFIG_READER_TOML, SIGMA_CONFIG_READER_TOML_FORMAT};
+use omiga_core::collection::table::{OmigaTable, OmigaValue};
+use omiga_core::constants::{SIGMA_CONFIG_READER_TOML, SIGMA_CONFIG_READER_TOML_FORMAT};
 
 use crate::core::error::FileError;
 use crate::reader::ConfigReader;

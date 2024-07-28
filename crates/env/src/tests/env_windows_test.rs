@@ -22,7 +22,7 @@
 
 use std::path::Path;
 
-use omigacore::collection::table::{Table, Value};
+use omiga_core::collection::table::{Table, Value};
 
 use crate::env::standard::StandardEnvironment;
 use crate::env::Environment;

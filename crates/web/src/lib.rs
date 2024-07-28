@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-// omigaweb
+// omiga_web
 
 // ----------------------------------------------------------------

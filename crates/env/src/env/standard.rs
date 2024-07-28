@@ -23,9 +23,9 @@ use std::io::ErrorKind;
 use std::path::{Path, PathBuf, MAIN_SEPARATOR};
 use std::{env, fs};
 
-use omigacore::collection::merger::merge_tables;
-use omigacore::collection::table::{Table, Value};
-use omigacore::constants::{
+use omiga_core::collection::merger::merge_tables;
+use omiga_core::collection::table::{Table, Value};
+use omiga_core::constants::{
     DOT, SIGMA_CONFIG_READER_TOML_FORMAT, SIGMA_CORE_CONFIG_FILE_FORMAT_DEFAULT,
     SIGMA_CORE_CONFIG_FILE_NAME_APPLICATION_DEFAULT, SIGMA_CORE_CONFIG_FILE_NAME_DEFAULT,
     SIGMA_CORE_PROFILE_ACTIVES_DEFAULT,

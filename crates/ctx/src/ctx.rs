@@ -18,8 +18,8 @@
 
 // ----------------------------------------------------------------
 
-use omigabean::bean::Boolean;
-use omigabean::factory::BeanFactory;
+use omiga_bean::bean::Boolean;
+use omiga_bean::factory::BeanFactory;
 
 pub mod standard;
 

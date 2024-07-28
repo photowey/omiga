@@ -1,11 +1,13 @@
 [package]
-name = "omigaenv"
+name = "omiga_env"
 version = "0.1.0"
 edition = "2021"
+
+authors = ["photowey <photowey@gmail.com>"]
 license = "Apache-2.0"
 
 [dependencies]
-omigacore = { path = "../core" }
+omiga_core = { path = "../core" }
 chrono = { workspace = true }
 toml = { workspace = true, optional = true }
 serde = { workspace = true, optional = true }
