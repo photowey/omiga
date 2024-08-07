@@ -11,6 +11,7 @@ members = [
     "crates/ctx",
     "crates/env",
     "crates/factory",
+    "crates/http",
     "crates/macroattr",
     "crates/macrofn",
     "crates/omiga",

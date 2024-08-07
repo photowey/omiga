@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-// omiga_ctx
+// omiga_http
 
 // ----------------------------------------------------------------
 
-pub mod ctx;
+pub mod status;
 
 #[cfg(test)]
 mod tests;
